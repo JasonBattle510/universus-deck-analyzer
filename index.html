@@ -78,6 +78,10 @@
         .smart-load-box { background: #1e3a8a; border: 2px solid #3b82f6; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
         .smart-load-title { color: #93c5fd; font-weight: 600; margin-bottom: 0.5rem; }
         .smart-load-sets { color: #dbeafe; font-size: 0.875rem; }
+        .progress-box { background: #1e293b; border: 1px solid #475569; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .progress-text { color: #cbd5e1; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .progress-bar { width: 100%; height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #06b6d4, #3b82f6); transition: width 0.3s; }
     </style>
 </head>
 <body>
@@ -95,7 +99,7 @@
             const [deckName, setDeckName] = useState('');
             const [isAnalyzing, setIsAnalyzing] = useState(false);
             const [error, setError] = useState('');
-            const [cardDatabase, setCardDatabase] = useState({});
+            const [cardDatabase, setCardDatabase] = useState({}); // Now stores arrays of card versions
             const [loadedSets, setLoadedSets] = useState([]);
             const [isLoadingSets, setIsLoadingSets] = useState(false);
             const [availableSets, setAvailableSets] = useState([]);
@@ -103,6 +107,7 @@
             const [notes, setNotes] = useState({});
             const [suggestedSets, setSuggestedSets] = useState([]);
             const [isDetecting, setIsDetecting] = useState(false);
+            const [detectProgress, setDetectProgress] = useState({ current: 0, total: 0 });
             
             useEffect(() => {
                 const stored = localStorage.getItem('universus-decks-v2');
@@ -119,7 +124,6 @@
             
             useEffect(() => {
                 if (decks.length > 0) {
-                    // Only save deck metadata, not full card objects
                     const lightDecks = decks.map(d => ({
                         id: d.id,
                         name: d.name,
@@ -156,6 +160,7 @@
                 
                 setIsDetecting(true);
                 setSuggestedSets([]);
+                setDetectProgress({ current: 0, total: availableSets.length });
                 
                 const cardNames = deckInput.split('\n')
                     .map(line => line.trim())
@@ -168,7 +173,10 @@
                 
                 const neededSets = new Set();
                 
-                for (const set of availableSets.slice(0, 20)) { // Check first 20 sets for speed
+                for (let i = 0; i < availableSets.length; i++) {
+                    const set = availableSets[i];
+                    setDetectProgress({ current: i + 1, total: availableSets.length });
+                    
                     try {
                         const response = await fetch(`${GITHUB_BASE}/${set.id}/setData.json`);
                         if (!response.ok) continue;
@@ -187,6 +195,7 @@
                 setSuggestedSets(Array.from(neededSets));
                 setSelectedSets(Array.from(neededSets));
                 setIsDetecting(false);
+                setDetectProgress({ current: 0, total: 0 });
             };
             
             const loadSets = async () => {
@@ -201,9 +210,16 @@
                         const response = await fetch(url);
                         if (!response.ok) continue;
                         const data = await response.json();
+                        
+                        // Store ALL versions of each card
                         Object.values(data.Cards).forEach(card => {
-                            newDatabase[card.Name.toLowerCase().trim()] = { ...card, setId };
+                            const key = card.Name.toLowerCase().trim();
+                            if (!newDatabase[key]) {
+                                newDatabase[key] = [];
+                            }
+                            newDatabase[key].push({ ...card, setId });
                         });
+                        
                         successful.push(setId);
                     } catch (err) { console.error(`Failed: ${setId}`, err); }
                 }
@@ -229,8 +245,13 @@
                     if (match) {
                         const count = parseInt(match[1]);
                         const cardName = match[2].trim();
-                        const card = cardDatabase[cardName.toLowerCase()];
-                        cards.push({ count, card, name: cardName });
+                        const cardVersions = cardDatabase[cardName.toLowerCase()];
+                        
+                        // Pick first version if multiple exist
+                        const card = cardVersions?.[0];
+                        const multipleVersions = cardVersions?.length > 1;
+                        
+                        cards.push({ count, card, name: cardName, multipleVersions, allVersions: cardVersions });
                     }
                 }
                 return cards;
@@ -244,7 +265,9 @@
                 
                 if (character?.card) {
                     const char = character.card;
-                    analysis += `## Character: ${char.Name}\\n\\n`;
+                    const setInfo = availableSets.find(s => s.id === char.setId);
+                    analysis += `## Character: ${char.Name}\\n`;
+                    analysis += `📦 From: ${setInfo?.name || char.setId}\\n\\n`;
                     analysis += `- Hand Size: ${char.HandSize || 'N/A'}\\n`;
                     analysis += `- Vitality: ${char.Health || 'N/A'}\\n`;
                     if (char.Symbols?.length) analysis += `- Symbols: ${char.Symbols.join(', ')}\\n`;
@@ -288,7 +311,12 @@
                 if (fourOfs.length > 0) {
                     analysis += `## Key Cards (4-Copies)\\n\\n`;
                     fourOfs.forEach(c => {
+                        const setInfo = availableSets.find(s => s.id === c.card.setId);
                         analysis += `**${c.card.Name}** (${c.card.Cardtype})\\n`;
+                        analysis += `📦 From: ${setInfo?.name || c.card.setId}\\n`;
+                        if (c.multipleVersions) {
+                            analysis += `⚠️ Note: Found in ${c.allVersions.length} sets (using ${setInfo?.name || c.card.setId})\\n`;
+                        }
                         if (c.card.Difficulty != null) analysis += `- Difficulty: ${c.card.Difficulty}, Control: ${c.card.Check}\\n`;
                         if (c.card.Speed != null) analysis += `- Speed: ${c.card.Speed}, Damage: ${c.card.Damage}, Zone: ${c.card.AttackZone}\\n`;
                         if (c.card.Abilities?.length) {
@@ -339,8 +367,8 @@
                 <div className="app">
                     <div className="header">
                         <h1 className="title">Universus Deck Analyzer</h1>
-                        <p className="subtitle">Community Edition - Smart Loading</p>
-                        {loadedSets.length > 0 && <p className="status">✅ {loadedSets.length} sets | {Object.keys(cardDatabase).length} cards loaded</p>}
+                        <p className="subtitle">Community Edition - Multi-Set Support</p>
+                        {loadedSets.length > 0 && <p className="status">✅ {loadedSets.length} sets | {Object.keys(cardDatabase).reduce((sum, key) => sum + cardDatabase[key].length, 0)} card versions loaded</p>}
                     </div>
                     
                     <div className="tabs">
@@ -356,9 +384,18 @@
                             {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ No sets loaded. Use "Detect Needed Sets" or go to Settings.</div>}
                             {error && <div className="alert alert-error">{error}</div>}
                             
-                            {suggestedSets.length > 0 && (
+                            {isDetecting && detectProgress.total > 0 && (
+                                <div className="progress-box">
+                                    <div className="progress-text">Scanning sets... {detectProgress.current}/{detectProgress.total}</div>
+                                    <div className="progress-bar">
+                                        <div className="progress-fill" style={{width: `${(detectProgress.current / detectProgress.total) * 100}%`}}></div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {suggestedSets.length > 0 && !isDetecting && (
                                 <div className="smart-load-box">
-                                    <div className="smart-load-title">🎯 Smart Detection Found {suggestedSets.length} Sets:</div>
+                                    <div className="smart-load-title">🎯 Found {suggestedSets.length} Set{suggestedSets.length !== 1 ? 's' : ''} Needed:</div>
                                     <div className="smart-load-sets">
                                         {suggestedSets.map(setId => {
                                             const set = availableSets.find(s => s.id === setId);
@@ -378,12 +415,12 @@
                             </div>
                             
                             <button onClick={detectNeededSets} disabled={isDetecting || !deckInput.trim()} className="btn btn-secondary">
-                                {isDetecting ? <span className="loading-spinner"><span className="spinner"></span>Detecting...</span> : '🔍 Detect Needed Sets'}
+                                {isDetecting ? <span className="loading-spinner"><span className="spinner"></span>Detecting (This may take ~30 sec)...</span> : '🔍 Detect Needed Sets (Scans All 99 Sets)'}
                             </button>
                             
                             {suggestedSets.length > 0 && (
                                 <button onClick={loadSets} disabled={isLoadingSets} className="btn btn-primary" style={{marginTop: '0.75rem'}}>
-                                    {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading...</span> : `Load ${suggestedSets.length} Sets`}
+                                    {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading...</span> : `Load ${suggestedSets.length} Detected Set${suggestedSets.length !== 1 ? 's' : ''}`}
                                 </button>
                             )}
                             
