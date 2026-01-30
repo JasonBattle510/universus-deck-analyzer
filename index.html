@@ -12,27 +12,22 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f1f5f9; min-height: 100vh; }
         .app { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-        
         .header { background: linear-gradient(135deg, #0e7490 0%, #1e40af 100%); border: 2px solid #06b6d4; border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 10px 40px rgba(6, 182, 212, 0.3); }
         .title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, #22d3ee, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .subtitle { color: #67e8f9; font-size: 1.125rem; }
         .status { color: #86efac; font-size: 0.875rem; margin-top: 0.75rem; }
-        
         .tabs { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
         .tab { padding: 0.875rem 1.75rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 1rem; }
         .tab-active { background: #06b6d4; color: #0f172a; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4); }
         .tab-inactive { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
         .tab-inactive:hover { background: #334155; color: #e2e8f0; }
-        
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
         .card-title { font-size: 1.75rem; font-weight: 700; color: #22d3ee; margin-bottom: 1.5rem; }
-        
         .form-group { margin-bottom: 1.5rem; }
         .label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: #cbd5e1; }
         .input, .textarea { width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 0.875rem; color: #f1f5f9; font-size: 0.95rem; }
         .input:focus, .textarea:focus { outline: none; border-color: #06b6d4; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1); }
         .textarea { font-family: 'Courier New', monospace; resize: vertical; min-height: 300px; }
-        
         .btn { width: 100%; padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; border: none; transition: all 0.2s; }
         .btn-primary { background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #0f172a; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4); }
         .btn-primary:hover { background: linear-gradient(135deg, #22d3ee, #60a5fa); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5); }
@@ -44,12 +39,9 @@
         .btn-success:hover { background: #22c55e; }
         .btn-back { background: #334155; color: #e2e8f0; }
         .btn-back:hover { background: #475569; }
-        
         .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid; }
         .alert-warning { background: #78350f; border-color: #f59e0b; color: #fbbf24; }
         .alert-error { background: #7f1d1d; border-color: #ef4444; color: #fca5a5; }
-        .alert-success { background: #14532d; border-color: #22c55e; color: #86efac; }
-        
         .deck-list { display: flex; flex-direction: column; gap: 1rem; }
         .deck-item { background: #0f172a; border: 2px solid #334155; border-radius: 10px; padding: 1.25rem; cursor: pointer; transition: all 0.2s; }
         .deck-item:hover { border-color: #06b6d4; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.2); }
@@ -57,14 +49,12 @@
         .deck-title { font-size: 1.375rem; font-weight: 700; color: #22d3ee; margin-bottom: 0.25rem; }
         .deck-date { color: #64748b; font-size: 0.75rem; }
         .deck-notes { color: #86efac; font-size: 0.875rem; margin-top: 0.5rem; }
-        
         .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; max-height: 450px; overflow-y: auto; padding: 0.5rem; margin-bottom: 1.5rem; background: #0f172a; border-radius: 8px; }
         .checkbox-label { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
         .checkbox-label:hover { background: #334155; border-color: #06b6d4; }
         .checkbox { width: 1.125rem; height: 1.125rem; accent-color: #06b6d4; }
-        .set-name { font-size: 0.875rem; font-weight: 600; }
-        .set-check { color: #22c55e; font-size: 0.75rem; margin-left: auto; }
-        
+        .set-name { font-size: 0.875rem; font-weight: 600; flex: 1; }
+        .set-check { color: #22c55e; font-size: 0.75rem; }
         .note-list { display: flex; flex-direction: column; gap: 0.75rem; }
         .note-item { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 1rem; }
         .note-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
@@ -72,29 +62,16 @@
         .note-delete { color: #ef4444; font-size: 0.75rem; cursor: pointer; border: none; background: none; padding: 0; }
         .note-delete:hover { color: #f87171; text-decoration: underline; }
         .note-text { color: #e2e8f0; line-height: 1.6; }
-        
         .analysis { background: #0f172a; border-radius: 8px; padding: 1.5rem; font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; color: #cbd5e1; }
         .decklist-pre { background: #0f172a; border-radius: 8px; padding: 1.5rem; font-family: 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6; white-space: pre-wrap; color: #cbd5e1; }
-        
         .empty { text-align: center; padding: 4rem 2rem; color: #64748b; }
         .empty-title { font-size: 1.25rem; margin-bottom: 0.5rem; }
-        .empty-text { font-size: 0.95rem; }
-        
         .loading-spinner { display: inline-flex; align-items: center; gap: 0.75rem; }
         .spinner { border: 3px solid #475569; border-top-color: transparent; border-radius: 50%; width: 1.5rem; height: 1.5rem; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
         .section { margin-bottom: 2rem; }
         .section-title { font-size: 1.25rem; font-weight: 700; color: #ec4899; margin-bottom: 1rem; }
         .section-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        
-        @media (max-width: 768px) {
-            .app { padding: 1rem 0.75rem; }
-            .header { padding: 1.5rem; }
-            .title { font-size: 1.875rem; }
-            .card { padding: 1.25rem; }
-            .checkbox-grid { grid-template-columns: 1fr; }
-        }
     </style>
 </head>
 <body>
@@ -102,18 +79,7 @@
     
     <script type="text/babel">
         const { useState, useEffect } = React;
-        
         const GITHUB_BASE = 'https://cdn.jsdelivr.net/gh/JasonBattle510/universus-deck-analyzer@main/UVS_Dataset-main';
-        
-        const FALLBACK_SETS = [
-            { id: 'aot01', name: 'Attack on Titan 1' }, { id: 'aot02', name: 'Attack on Titan 2' },
-            { id: 'aot03', name: 'Attack on Titan 3' }, { id: 'ggs01', name: 'Guilty Gear Strive' },
-            { id: 'mha01', name: 'My Hero Academia 1' }, { id: 'mha02', name: 'My Hero Academia 2' },
-            { id: 'mha03', name: 'My Hero Academia 3' }, { id: 'mha04', name: 'My Hero Academia 4' },
-            { id: 'mha05', name: 'My Hero Academia 5' }, { id: 'mha06', name: 'My Hero Academia 6' },
-            { id: 'mha07', name: 'My Hero Academia 7' }, { id: 'mha08', name: 'My Hero Academia 8' },
-            { id: 'sf5', name: 'Street Fighter V' }, { id: 'yyh', name: 'Yu Yu Hakusho' },
-        ];
         
         function App() {
             const [activeTab, setActiveTab] = useState('settings');
@@ -126,8 +92,8 @@
             const [cardDatabase, setCardDatabase] = useState({});
             const [loadedSets, setLoadedSets] = useState([]);
             const [isLoadingSets, setIsLoadingSets] = useState(false);
-            const [availableSets, setAvailableSets] = useState(FALLBACK_SETS);
-            const [selectedSets, setSelectedSets] = useState(FALLBACK_SETS.map(s => s.id));
+            const [availableSets, setAvailableSets] = useState([]);
+            const [selectedSets, setSelectedSets] = useState([]);
             const [notes, setNotes] = useState({});
             
             useEffect(() => {
@@ -141,6 +107,7 @@
                         setLoadedSets(data.loadedSets || []);
                     } catch (e) { console.error(e); }
                 }
+                loadSetList();
             }, []);
             
             useEffect(() => {
@@ -148,6 +115,26 @@
                     localStorage.setItem('universus-decks', JSON.stringify({ decks, notes, cardDatabase, loadedSets }));
                 }
             }, [decks, notes, cardDatabase, loadedSets]);
+            
+            const loadSetList = async () => {
+                console.log('Loading set list...');
+                try {
+                    const url = `${GITHUB_BASE}/setList.json`;
+                    console.log('Fetching from:', url);
+                    const response = await fetch(url);
+                    console.log('Response status:', response.status);
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Loaded sets:', data.sets?.length);
+                        setAvailableSets(data.sets || []);
+                        setSelectedSets(data.sets?.map(s => s.id) || []);
+                    } else {
+                        console.error('Failed to load setList.json');
+                    }
+                } catch (e) {
+                    console.error('Error loading setList:', e);
+                }
+            };
             
             const loadSets = async () => {
                 setIsLoadingSets(true);
@@ -173,9 +160,9 @@
                 setIsLoadingSets(false);
                 
                 if (successful.length === 0) {
-                    setError('Failed to load sets. Check internet connection or try fewer sets.');
+                    setError('Failed to load sets.');
                 } else if (successful.length < selectedSets.length) {
-                    setError(`Loaded ${successful.length}/${selectedSets.length} sets successfully.`);
+                    setError(`Loaded ${successful.length}/${selectedSets.length} sets.`);
                 }
             };
             
@@ -275,7 +262,7 @@
                     setDeckName('');
                     setActiveTab('library');
                 } catch (err) {
-                    setError('Analysis failed. Check deck format.');
+                    setError('Analysis failed.');
                 } finally {
                     setIsAnalyzing(false);
                 }
@@ -285,20 +272,23 @@
                 <div className="app">
                     <div className="header">
                         <h1 className="title">Universus Deck Analyzer</h1>
-                        <p className="subtitle">Community Edition - Open Source</p>
+                        <p className="subtitle">Community Edition</p>
                         {loadedSets.length > 0 && <p className="status">✅ {loadedSets.length} sets | {Object.keys(cardDatabase).length} cards loaded</p>}
                     </div>
                     
                     <div className="tabs">
-                        <button onClick={() => setActiveTab('analyze')} className={`tab ${activeTab === 'analyze' ? 'tab-active' : 'tab-inactive'}`}>Analyze Deck</button>
-                        <button onClick={() => setActiveTab('library')} className={`tab ${activeTab === 'library' ? 'tab-active' : 'tab-inactive'}`}>My Library ({decks.length})</button>
-                        {selectedDeck && <button onClick={() => setActiveTab('view')} className={`tab ${activeTab === 'view' ? 'tab-active' : 'tab-inactive'}`}>View Deck</button>}
+                        <button onClick={() => setActiveTab('analyze')} className={`tab ${activeTab === 'analyze' ? 'tab-active' : 'tab-inactive'}`}>Analyze</button>
+                        <button onClick={() => setActiveTab('library')} className={`tab ${activeTab === 'library' ? 'tab-active' : 'tab-inactive'}`}>Library ({decks.length})</button>
+                        {selectedDeck && <button onClick={() => setActiveTab('view')} className={`tab ${activeTab === 'view' ? 'tab-active' : 'tab-inactive'}`}>View</button>}
                         <button onClick={() => setActiveTab('settings')} className={`tab ${activeTab === 'settings' ? 'tab-active' : 'tab-inactive'}`}>⚙️ Settings</button>
                     </div>
                     
                     {activeTab === 'settings' && (
                         <div className="card">
                             <h2 className="card-title">Load Card Database</h2>
+                            <p style={{marginBottom: '1rem', color: '#cbd5e1'}}>
+                                {availableSets.length} sets available | {selectedSets.length} selected
+                            </p>
                             <div className="checkbox-grid">
                                 {availableSets.map(set => (
                                     <label key={set.id} className="checkbox-label">
@@ -311,40 +301,36 @@
                                 ))}
                             </div>
                             <button onClick={loadSets} disabled={isLoadingSets || selectedSets.length === 0} className="btn btn-primary">
-                                {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading... ({loadedSets.length}/{selectedSets.length})</span> : `Load ${selectedSets.length} Sets`}
+                                {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading ({loadedSets.length}/{selectedSets.length})</span> : `Load ${selectedSets.length} Sets`}
                             </button>
                             {error && <div className="alert alert-warning" style={{marginTop: '1rem'}}>{error}</div>}
-                            <p style={{marginTop: '1rem', textAlign: 'center', color: '#64748b', fontSize: '0.875rem'}}>Data loaded from: github.com/JasonBattle510/universus-deck-analyzer</p>
                         </div>
                     )}
                     
                     {activeTab === 'analyze' && (
                         <div className="card">
-                            <h2 className="card-title">Analyze New Deck</h2>
-                            {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ No card data loaded! Go to Settings first.</div>}
+                            <h2 className="card-title">Analyze Deck</h2>
+                            {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ Load sets in Settings first</div>}
                             {error && <div className="alert alert-error">{error}</div>}
                             <div className="form-group">
                                 <label className="label">Deck Name</label>
-                                <input type="text" className="input" value={deckName} onChange={(e) => setDeckName(e.target.value)} placeholder="My Awesome Deck" />
+                                <input type="text" className="input" value={deckName} onChange={(e) => setDeckName(e.target.value)} placeholder="My Deck" />
                             </div>
                             <div className="form-group">
-                                <label className="label">Deck List (Simple Format)</label>
-                                <textarea className="textarea" value={deckInput} onChange={(e) => setDeckInput(e.target.value)} placeholder="1 Character Name&#10;4 Card Name&#10;4 Another Card&#10;..." />
+                                <label className="label">Deck List</label>
+                                <textarea className="textarea" value={deckInput} onChange={(e) => setDeckInput(e.target.value)} placeholder="1 Character&#10;4 Card Name&#10;..." />
                             </div>
                             <button onClick={analyzeDeck} disabled={isAnalyzing || Object.keys(cardDatabase).length === 0} className="btn btn-primary">
-                                {isAnalyzing ? 'Analyzing...' : 'Analyze Deck'}
+                                {isAnalyzing ? 'Analyzing...' : 'Analyze'}
                             </button>
                         </div>
                     )}
                     
                     {activeTab === 'library' && (
                         <div className="card">
-                            <h2 className="card-title">My Deck Library</h2>
+                            <h2 className="card-title">Library</h2>
                             {decks.length === 0 ? (
-                                <div className="empty">
-                                    <p className="empty-title">No decks yet!</p>
-                                    <p className="empty-text">Click "Analyze Deck" to get started.</p>
-                                </div>
+                                <div className="empty"><p className="empty-title">No decks yet!</p></div>
                             ) : (
                                 <div className="deck-list">
                                     {decks.map(deck => (
@@ -375,13 +361,13 @@
                                 <pre className="decklist-pre">{selectedDeck.deckList}</pre>
                             </div>
                             <div className="section">
-                                <h3 className="section-title">Strategic Analysis</h3>
+                                <h3 className="section-title">Analysis</h3>
                                 <div className="analysis">{selectedDeck.analysis}</div>
                             </div>
                             <div>
                                 <div className="section-actions">
-                                    <h3 className="section-title" style={{marginBottom: 0}}>Game Notes</h3>
-                                    <button onClick={() => { const note = prompt('Add note:'); if (note) setNotes({...notes, [selectedDeck.id]: [...(notes[selectedDeck.id] || []), { id: Date.now(), text: note, timestamp: new Date().toISOString() }]}); }} className="btn btn-success btn-small">+ Add Note</button>
+                                    <h3 className="section-title" style={{marginBottom: 0}}>Notes</h3>
+                                    <button onClick={() => { const note = prompt('Add note:'); if (note) setNotes({...notes, [selectedDeck.id]: [...(notes[selectedDeck.id] || []), { id: Date.now(), text: note, timestamp: new Date().toISOString() }]}); }} className="btn btn-success btn-small">+ Note</button>
                                 </div>
                                 {notes[selectedDeck.id]?.length > 0 ? (
                                     <div className="note-list">
@@ -396,7 +382,7 @@
                                         ))}
                                     </div>
                                 ) : (
-                                    <p style={{color: '#64748b', fontSize: '0.875rem'}}>No notes yet.</p>
+                                    <p style={{color: '#64748b', fontSize: '0.875rem'}}>No notes</p>
                                 )}
                             </div>
                         </div>
