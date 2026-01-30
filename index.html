@@ -32,6 +32,8 @@
         .btn-primary { background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #0f172a; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4); }
         .btn-primary:hover { background: linear-gradient(135deg, #22d3ee, #60a5fa); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5); }
         .btn-primary:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary { background: #334155; color: #e2e8f0; margin-top: 0.75rem; }
+        .btn-secondary:hover { background: #475569; }
         .btn-small { width: auto; padding: 0.625rem 1.25rem; font-size: 0.875rem; }
         .btn-danger { background: #dc2626; color: white; }
         .btn-danger:hover { background: #ef4444; }
@@ -42,6 +44,8 @@
         .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid; }
         .alert-warning { background: #78350f; border-color: #f59e0b; color: #fbbf24; }
         .alert-error { background: #7f1d1d; border-color: #ef4444; color: #fca5a5; }
+        .alert-info { background: #1e3a8a; border-color: #3b82f6; color: #93c5fd; }
+        .alert-success { background: #14532d; border-color: #22c55e; color: #86efac; }
         .deck-list { display: flex; flex-direction: column; gap: 1rem; }
         .deck-item { background: #0f172a; border: 2px solid #334155; border-radius: 10px; padding: 1.25rem; cursor: pointer; transition: all 0.2s; }
         .deck-item:hover { border-color: #06b6d4; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.2); }
@@ -72,6 +76,9 @@
         .section { margin-bottom: 2rem; }
         .section-title { font-size: 1.25rem; font-weight: 700; color: #ec4899; margin-bottom: 1rem; }
         .section-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .smart-load-box { background: #1e3a8a; border: 2px solid #3b82f6; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+        .smart-load-title { color: #93c5fd; font-weight: 600; margin-bottom: 0.5rem; }
+        .smart-load-sets { color: #dbeafe; font-size: 0.875rem; }
     </style>
 </head>
 <body>
@@ -82,7 +89,7 @@
         const GITHUB_BASE = 'https://cdn.jsdelivr.net/gh/JasonBattle510/universus-deck-analyzer@main/UVS_Dataset-main';
         
         function App() {
-            const [activeTab, setActiveTab] = useState('settings');
+            const [activeTab, setActiveTab] = useState('analyze');
             const [decks, setDecks] = useState([]);
             const [selectedDeck, setSelectedDeck] = useState(null);
             const [deckInput, setDeckInput] = useState('');
@@ -95,6 +102,8 @@
             const [availableSets, setAvailableSets] = useState([]);
             const [selectedSets, setSelectedSets] = useState([]);
             const [notes, setNotes] = useState({});
+            const [suggestedSets, setSuggestedSets] = useState([]);
+            const [isDetecting, setIsDetecting] = useState(false);
             
             useEffect(() => {
                 const stored = localStorage.getItem('universus-decks');
@@ -117,23 +126,59 @@
             }, [decks, notes, cardDatabase, loadedSets]);
             
             const loadSetList = async () => {
-                console.log('Loading set list...');
                 try {
-                    const url = `${GITHUB_BASE}/setList.json`;
-                    console.log('Fetching from:', url);
-                    const response = await fetch(url);
-                    console.log('Response status:', response.status);
+                    const response = await fetch(`${GITHUB_BASE}/setList.json`);
                     if (response.ok) {
                         const data = await response.json();
-                        console.log('Loaded sets:', data.sets?.length);
                         setAvailableSets(data.sets || []);
                         setSelectedSets(data.sets?.map(s => s.id) || []);
-                    } else {
-                        console.error('Failed to load setList.json');
                     }
                 } catch (e) {
                     console.error('Error loading setList:', e);
                 }
+            };
+            
+            const detectNeededSets = async () => {
+                if (!deckInput.trim()) {
+                    setError('Enter a deck list first');
+                    return;
+                }
+                
+                setIsDetecting(true);
+                setSuggestedSets([]);
+                
+                const cardNames = deckInput.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line && !line.startsWith('['))
+                    .map(line => {
+                        const match = line.match(/^\d+\s+(.+)$/);
+                        return match ? match[1].trim().toLowerCase() : '';
+                    })
+                    .filter(Boolean);
+                
+                const neededSets = new Set();
+                
+                // Check each set to see if it contains any of our cards
+                for (const set of availableSets) {
+                    try {
+                        const response = await fetch(`${GITHUB_BASE}/${set.id}/setData.json`);
+                        if (!response.ok) continue;
+                        const data = await response.json();
+                        
+                        const setCardNames = Object.values(data.Cards).map(card => card.Name.toLowerCase());
+                        
+                        // If any of our deck cards are in this set, we need it
+                        if (cardNames.some(name => setCardNames.includes(name))) {
+                            neededSets.add(set.id);
+                        }
+                    } catch (err) {
+                        console.error(`Failed to check ${set.id}:`, err);
+                    }
+                }
+                
+                setSuggestedSets(Array.from(neededSets));
+                setSelectedSets(Array.from(neededSets));
+                setIsDetecting(false);
             };
             
             const loadSets = async () => {
@@ -260,6 +305,7 @@
                     setDecks([...decks, { id: Date.now(), name: deckName, deckList: deckInput, analysis, cards, createdAt: new Date().toISOString() }]);
                     setDeckInput('');
                     setDeckName('');
+                    setSuggestedSets([]);
                     setActiveTab('library');
                 } catch (err) {
                     setError('Analysis failed.');
@@ -272,7 +318,7 @@
                 <div className="app">
                     <div className="header">
                         <h1 className="title">Universus Deck Analyzer</h1>
-                        <p className="subtitle">Community Edition</p>
+                        <p className="subtitle">Community Edition - Smart Loading</p>
                         {loadedSets.length > 0 && <p className="status">✅ {loadedSets.length} sets | {Object.keys(cardDatabase).length} cards loaded</p>}
                     </div>
                     
@@ -283,9 +329,52 @@
                         <button onClick={() => setActiveTab('settings')} className={`tab ${activeTab === 'settings' ? 'tab-active' : 'tab-inactive'}`}>⚙️ Settings</button>
                     </div>
                     
+                    {activeTab === 'analyze' && (
+                        <div className="card">
+                            <h2 className="card-title">Analyze Deck</h2>
+                            {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ No sets loaded. Use "Detect Needed Sets" or go to Settings.</div>}
+                            {error && <div className="alert alert-error">{error}</div>}
+                            
+                            {suggestedSets.length > 0 && (
+                                <div className="smart-load-box">
+                                    <div className="smart-load-title">🎯 Smart Detection Found {suggestedSets.length} Sets Needed:</div>
+                                    <div className="smart-load-sets">
+                                        {suggestedSets.map(setId => {
+                                            const set = availableSets.find(s => s.id === setId);
+                                            return set ? set.name || setId : setId;
+                                        }).join(', ')}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            <div className="form-group">
+                                <label className="label">Deck Name</label>
+                                <input type="text" className="input" value={deckName} onChange={(e) => setDeckName(e.target.value)} placeholder="My Deck" />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Deck List</label>
+                                <textarea className="textarea" value={deckInput} onChange={(e) => setDeckInput(e.target.value)} placeholder="1 Character&#10;4 Card Name&#10;..." />
+                            </div>
+                            
+                            <button onClick={detectNeededSets} disabled={isDetecting || !deckInput.trim()} className="btn btn-secondary">
+                                {isDetecting ? <span className="loading-spinner"><span className="spinner"></span>Detecting Sets...</span> : '🔍 Detect Needed Sets (Smart Load)'}
+                            </button>
+                            
+                            {suggestedSets.length > 0 && (
+                                <button onClick={loadSets} disabled={isLoadingSets} className="btn btn-primary" style={{marginTop: '0.75rem'}}>
+                                    {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading...</span> : `Load ${suggestedSets.length} Detected Sets`}
+                                </button>
+                            )}
+                            
+                            <button onClick={analyzeDeck} disabled={isAnalyzing || Object.keys(cardDatabase).length === 0} className="btn btn-primary" style={{marginTop: '0.75rem'}}>
+                                {isAnalyzing ? 'Analyzing...' : 'Analyze Deck'}
+                            </button>
+                        </div>
+                    )}
+                    
                     {activeTab === 'settings' && (
                         <div className="card">
-                            <h2 className="card-title">Load Card Database</h2>
+                            <h2 className="card-title">Manual Load Settings</h2>
                             <p style={{marginBottom: '1rem', color: '#cbd5e1'}}>
                                 {availableSets.length} sets available | {selectedSets.length} selected
                             </p>
@@ -304,25 +393,6 @@
                                 {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading ({loadedSets.length}/{selectedSets.length})</span> : `Load ${selectedSets.length} Sets`}
                             </button>
                             {error && <div className="alert alert-warning" style={{marginTop: '1rem'}}>{error}</div>}
-                        </div>
-                    )}
-                    
-                    {activeTab === 'analyze' && (
-                        <div className="card">
-                            <h2 className="card-title">Analyze Deck</h2>
-                            {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ Load sets in Settings first</div>}
-                            {error && <div className="alert alert-error">{error}</div>}
-                            <div className="form-group">
-                                <label className="label">Deck Name</label>
-                                <input type="text" className="input" value={deckName} onChange={(e) => setDeckName(e.target.value)} placeholder="My Deck" />
-                            </div>
-                            <div className="form-group">
-                                <label className="label">Deck List</label>
-                                <textarea className="textarea" value={deckInput} onChange={(e) => setDeckInput(e.target.value)} placeholder="1 Character&#10;4 Card Name&#10;..." />
-                            </div>
-                            <button onClick={analyzeDeck} disabled={isAnalyzing || Object.keys(cardDatabase).length === 0} className="btn btn-primary">
-                                {isAnalyzing ? 'Analyzing...' : 'Analyze'}
-                            </button>
                         </div>
                     )}
                     
