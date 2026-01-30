@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universus Deck Analyzer</title>
+    <title>Universus Deck Analyzer - AI Powered</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -12,76 +12,29 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f1f5f9; min-height: 100vh; }
         .app { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-        .header { background: linear-gradient(135deg, #0e7490 0%, #1e40af 100%); border: 2px solid #06b6d4; border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 10px 40px rgba(6, 182, 212, 0.3); }
-        .title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, #22d3ee, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .subtitle { color: #67e8f9; font-size: 1.125rem; }
-        .status { color: #86efac; font-size: 0.875rem; margin-top: 0.75rem; }
-        .tabs { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
-        .tab { padding: 0.875rem 1.75rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 1rem; }
-        .tab-active { background: #06b6d4; color: #0f172a; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4); }
+        .header { background: linear-gradient(135deg, #0e7490 0%, #1e40af 100%); border: 2px solid #06b6d4; borderRadius: 16px; padding: 2.5rem; marginBottom: 2rem; boxShadow: 0 10px 40px rgba(6, 182, 212, 0.3); }
+        .title { fontSize: 2.5rem; fontWeight: 700; marginBottom: 0.5rem; background: linear-gradient(135deg, #22d3ee, #ec4899); WebkitBackgroundClip: text; WebkitTextFillColor: transparent; }
+        .subtitle { color: #67e8f9; fontSize: 1.125rem; }
+        .status { color: #86efac; fontSize: 0.875rem; marginTop: 0.75rem; }
+        .tabs { display: flex; gap: 0.75rem; marginBottom: 2rem; flexWrap: wrap; }
+        .tab { padding: 0.875rem 1.75rem; borderRadius: 10px; fontWeight: 600; cursor: pointer; transition: all 0.2s; border: none; fontSize: 1rem; }
+        .tab-active { background: #06b6d4; color: #0f172a; boxShadow: 0 4px 12px rgba(6, 182, 212, 0.4); }
         .tab-inactive { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
-        .tab-inactive:hover { background: #334155; color: #e2e8f0; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
-        .card-title { font-size: 1.75rem; font-weight: 700; color: #22d3ee; margin-bottom: 1.5rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        .label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: #cbd5e1; }
-        .input, .textarea { width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 0.875rem; color: #f1f5f9; font-size: 0.95rem; }
-        .input:focus, .textarea:focus { outline: none; border-color: #06b6d4; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1); }
-        .textarea { font-family: 'Courier New', monospace; resize: vertical; min-height: 300px; }
-        .btn { width: 100%; padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; border: none; transition: all 0.2s; }
-        .btn-primary { background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #0f172a; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4); }
-        .btn-primary:hover { background: linear-gradient(135deg, #22d3ee, #60a5fa); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5); }
-        .btn-primary:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-        .btn-secondary { background: #334155; color: #e2e8f0; margin-top: 0.75rem; }
-        .btn-secondary:hover { background: #475569; }
-        .btn-small { width: auto; padding: 0.625rem 1.25rem; font-size: 0.875rem; }
-        .btn-danger { background: #dc2626; color: white; }
-        .btn-danger:hover { background: #ef4444; }
-        .btn-success { background: #16a34a; color: white; }
-        .btn-success:hover { background: #22c55e; }
-        .btn-back { background: #334155; color: #e2e8f0; }
-        .btn-back:hover { background: #475569; }
-        .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid; }
-        .alert-warning { background: #78350f; border-color: #f59e0b; color: #fbbf24; }
-        .alert-error { background: #7f1d1d; border-color: #ef4444; color: #fca5a5; }
-        .alert-info { background: #1e3a8a; border-color: #3b82f6; color: #93c5fd; }
-        .deck-list { display: flex; flex-direction: column; gap: 1rem; }
-        .deck-item { background: #0f172a; border: 2px solid #334155; border-radius: 10px; padding: 1.25rem; cursor: pointer; transition: all 0.2s; }
-        .deck-item:hover { border-color: #06b6d4; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.2); }
-        .deck-header { display: flex; justify-content: space-between; align-items: start; }
-        .deck-title { font-size: 1.375rem; font-weight: 700; color: #22d3ee; margin-bottom: 0.25rem; }
-        .deck-date { color: #64748b; font-size: 0.75rem; }
-        .deck-notes { color: #86efac; font-size: 0.875rem; margin-top: 0.5rem; }
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; max-height: 450px; overflow-y: auto; padding: 0.5rem; margin-bottom: 1.5rem; background: #0f172a; border-radius: 8px; }
-        .checkbox-label { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .checkbox-label:hover { background: #334155; border-color: #06b6d4; }
-        .checkbox { width: 1.125rem; height: 1.125rem; accent-color: #06b6d4; }
-        .set-name { font-size: 0.875rem; font-weight: 600; flex: 1; }
-        .set-check { color: #22c55e; font-size: 0.75rem; }
-        .note-list { display: flex; flex-direction: column; gap: 0.75rem; }
-        .note-item { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 1rem; }
-        .note-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
-        .note-date { color: #64748b; font-size: 0.75rem; }
-        .note-delete { color: #ef4444; font-size: 0.75rem; cursor: pointer; border: none; background: none; padding: 0; }
-        .note-delete:hover { color: #f87171; text-decoration: underline; }
-        .note-text { color: #e2e8f0; line-height: 1.6; }
-        .analysis { background: #0f172a; border-radius: 8px; padding: 1.5rem; font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; color: #cbd5e1; }
-        .decklist-pre { background: #0f172a; border-radius: 8px; padding: 1.5rem; font-family: 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6; white-space: pre-wrap; color: #cbd5e1; }
-        .empty { text-align: center; padding: 4rem 2rem; color: #64748b; }
-        .empty-title { font-size: 1.25rem; margin-bottom: 0.5rem; }
-        .loading-spinner { display: inline-flex; align-items: center; gap: 0.75rem; }
-        .spinner { border: 3px solid #475569; border-top-color: transparent; border-radius: 50%; width: 1.5rem; height: 1.5rem; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .section { margin-bottom: 2rem; }
-        .section-title { font-size: 1.25rem; font-weight: 700; color: #ec4899; margin-bottom: 1rem; }
-        .section-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .smart-load-box { background: #1e3a8a; border: 2px solid #3b82f6; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
-        .smart-load-title { color: #93c5fd; font-weight: 600; margin-bottom: 0.5rem; }
-        .smart-load-sets { color: #dbeafe; font-size: 0.875rem; }
-        .progress-box { background: #1e293b; border: 1px solid #475569; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-        .progress-text { color: #cbd5e1; font-size: 0.875rem; margin-bottom: 0.5rem; }
-        .progress-bar { width: 100%; height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
+        .card { background: #1e293b; border: 1px solid #334155; borderRadius: 12px; padding: 2rem; boxShadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+        .btn { width: 100%; padding: 1rem; borderRadius: 10px; fontWeight: 700; fontSize: 1rem; cursor: pointer; border: none; transition: all 0.2s; marginTop: 0.75rem; }
+        .btn-primary { background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #0f172a; }
+        .btn-secondary { background: #334155; color: #e2e8f0; }
+        .alert { padding: 1rem; borderRadius: 8px; marginBottom: 1.5rem; borderLeft: 4px solid; }
+        .alert-warning { background: #78350f; borderColor: #f59e0b; color: #fbbf24; }
+        .progress-box { background: #1e293b; border: 1px solid #475569; borderRadius: 8px; padding: 1rem; marginBottom: 1rem; }
+        .progress-bar { width: 100%; height: 8px; background: #0f172a; borderRadius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #06b6d4, #3b82f6); transition: width 0.3s; }
+        .smart-box { background: #1e3a8a; border: 2px solid #3b82f6; borderRadius: 8px; padding: 1rem; marginBottom: 1.5rem; }
+        .input, .textarea { width: 100%; background: #0f172a; border: 1px solid #475569; borderRadius: 8px; padding: 0.875rem; color: #f1f5f9; fontSize: 0.95rem; }
+        .textarea { fontFamily: 'Courier New', monospace; resize: vertical; minHeight: 250px; }
+        .analysis { background: #0f172a; borderRadius: 8px; padding: 1.5rem; fontSize: 0.9rem; lineHeight: 1.8; whiteSpace: pre-wrap; color: #cbd5e1; }
+        .spinner { border: 3px solid #475569; borderTopColor: transparent; borderRadius: 50%; width: 1.5rem; height: 1.5rem; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -99,7 +52,7 @@
             const [deckName, setDeckName] = useState('');
             const [isAnalyzing, setIsAnalyzing] = useState(false);
             const [error, setError] = useState('');
-            const [cardDatabase, setCardDatabase] = useState({}); // Now stores arrays of card versions
+            const [cardDatabase, setCardDatabase] = useState({});
             const [loadedSets, setLoadedSets] = useState([]);
             const [isLoadingSets, setIsLoadingSets] = useState(false);
             const [availableSets, setAvailableSets] = useState([]);
@@ -110,7 +63,7 @@
             const [detectProgress, setDetectProgress] = useState({ current: 0, total: 0 });
             
             useEffect(() => {
-                const stored = localStorage.getItem('universus-decks-v2');
+                const stored = localStorage.getItem('universus-decks-v3');
                 if (stored) {
                     try {
                         const data = JSON.parse(stored);
@@ -131,7 +84,7 @@
                         analysis: d.analysis,
                         createdAt: d.createdAt
                     }));
-                    localStorage.setItem('universus-decks-v2', JSON.stringify({ 
+                    localStorage.setItem('universus-decks-v3', JSON.stringify({ 
                         decks: lightDecks, 
                         notes, 
                         loadedSets 
@@ -147,17 +100,11 @@
                         setAvailableSets(data.sets || []);
                         setSelectedSets(data.sets?.map(s => s.id) || []);
                     }
-                } catch (e) {
-                    console.error('Error loading setList:', e);
-                }
+                } catch (e) { console.error(e); }
             };
             
             const detectNeededSets = async () => {
-                if (!deckInput.trim()) {
-                    setError('Enter a deck list first');
-                    return;
-                }
-                
+                if (!deckInput.trim()) { setError('Enter deck list first'); return; }
                 setIsDetecting(true);
                 setSuggestedSets([]);
                 setDetectProgress({ current: 0, total: availableSets.length });
@@ -172,26 +119,19 @@
                     .filter(Boolean);
                 
                 const neededSets = new Set();
-                
                 for (let i = 0; i < availableSets.length; i++) {
                     const set = availableSets[i];
                     setDetectProgress({ current: i + 1, total: availableSets.length });
-                    
                     try {
                         const response = await fetch(`${GITHUB_BASE}/${set.id}/setData.json`);
                         if (!response.ok) continue;
                         const data = await response.json();
-                        
                         const setCardNames = Object.values(data.Cards).map(card => card.Name.toLowerCase());
-                        
                         if (cardNames.some(name => setCardNames.includes(name))) {
                             neededSets.add(set.id);
                         }
-                    } catch (err) {
-                        console.error(`Failed to check ${set.id}:`, err);
-                    }
+                    } catch (err) { console.error(`Failed: ${set.id}`, err); }
                 }
-                
                 setSuggestedSets(Array.from(neededSets));
                 setSelectedSets(Array.from(neededSets));
                 setIsDetecting(false);
@@ -203,161 +143,117 @@
                 setError('');
                 const newDatabase = {};
                 const successful = [];
-                
                 for (const setId of selectedSets) {
                     try {
                         const url = `${GITHUB_BASE}/${setId}/setData.json`;
                         const response = await fetch(url);
                         if (!response.ok) continue;
                         const data = await response.json();
-                        
-                        // Store ALL versions of each card
                         Object.values(data.Cards).forEach(card => {
                             const key = card.Name.toLowerCase().trim();
-                            if (!newDatabase[key]) {
-                                newDatabase[key] = [];
-                            }
+                            if (!newDatabase[key]) newDatabase[key] = [];
                             newDatabase[key].push({ ...card, setId });
                         });
-                        
                         successful.push(setId);
                     } catch (err) { console.error(`Failed: ${setId}`, err); }
                 }
-                
                 setCardDatabase(newDatabase);
                 setLoadedSets(successful);
                 setIsLoadingSets(false);
-                
-                if (successful.length === 0) {
-                    setError('Failed to load sets.');
-                } else if (successful.length < selectedSets.length) {
-                    setError(`Loaded ${successful.length}/${selectedSets.length} sets.`);
-                }
+                if (successful.length === 0) setError('Failed to load sets.');
             };
             
-            const parseDeckList = (text) => {
-                const lines = text.split('\n');
-                const cards = [];
-                for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (!trimmed || trimmed.startsWith('[')) continue;
-                    const match = trimmed.match(/^(\d+)\s+(.+)$/);
-                    if (match) {
-                        const count = parseInt(match[1]);
-                        const cardName = match[2].trim();
-                        const cardVersions = cardDatabase[cardName.toLowerCase()];
-                        
-                        // Pick first version if multiple exist
-                        const card = cardVersions?.[0];
-                        const multipleVersions = cardVersions?.length > 1;
-                        
-                        cards.push({ count, card, name: cardName, multipleVersions, allVersions: cardVersions });
-                    }
-                }
-                return cards;
-            };
-            
-            const generateAnalysis = (cards) => {
-                const foundations = cards.filter(c => c.card?.Cardtype === 'Foundation');
-                const attacks = cards.filter(c => c.card?.Cardtype === 'Attack');
-                const character = cards.find(c => c.card?.Cardtype === 'Character');
-                let analysis = '';
-                
-                if (character?.card) {
-                    const char = character.card;
-                    const setInfo = availableSets.find(s => s.id === char.setId);
-                    analysis += `## Character: ${char.Name}\\n`;
-                    analysis += `📦 From: ${setInfo?.name || char.setId}\\n\\n`;
-                    analysis += `- Hand Size: ${char.HandSize || 'N/A'}\\n`;
-                    analysis += `- Vitality: ${char.Health || 'N/A'}\\n`;
-                    if (char.Symbols?.length) analysis += `- Symbols: ${char.Symbols.join(', ')}\\n`;
-                    if (char.Keywords?.length) analysis += `- Keywords: ${char.Keywords.map(k => k.Name).join(', ')}\\n`;
-                    analysis += '\\n**Abilities:**\\n';
-                    char.Abilities?.forEach(a => {
-                        const cleanEffect = a.Effect.replace(/"/g, '\\"').substring(0, 200);
-                        analysis += `- ${a.Type}${a.Cost ? ` (${a.Cost})` : ''}: ${cleanEffect}\\n`;
-                    });
-                    analysis += '\\n---\\n\\n';
-                }
-                
-                const total = cards.reduce((s, c) => s + c.count, 0);
-                analysis += `## Deck Composition\\n\\n- Total Cards: ${total}\\n- Foundations: ${foundations.reduce((s, c) => s + c.count, 0)}\\n- Attacks: ${attacks.reduce((s, c) => s + c.count, 0)}\\n\\n`;
-                
-                if (foundations.length > 0) {
-                    const fWithDiff = foundations.filter(f => f.card?.Difficulty != null);
-                    if (fWithDiff.length > 0) {
-                        const avgDiff = fWithDiff.reduce((s, c) => s + c.card.Difficulty * c.count, 0) / fWithDiff.reduce((s, c) => s + c.count, 0);
-                        const avgCheck = fWithDiff.reduce((s, c) => s + c.card.Check * c.count, 0) / fWithDiff.reduce((s, c) => s + c.count, 0);
-                        analysis += `## Foundation Statistics\\n\\n- Average Difficulty: ${avgDiff.toFixed(1)}\\n- Average Control: ${avgCheck.toFixed(1)}\\n`;
-                        const bz = { high: 0, mid: 0, low: 0 };
-                        foundations.forEach(f => { if (f.card?.BlockZone) bz[f.card.BlockZone] += f.count; });
-                        analysis += `- Block Coverage: High(${bz.high}) Mid(${bz.mid}) Low(${bz.low})\\n\\n`;
-                    }
-                }
-                
-                if (attacks.length > 0) {
-                    const aWithStats = attacks.filter(a => a.card?.Speed != null);
-                    if (aWithStats.length > 0) {
-                        const avgSpd = aWithStats.reduce((s, c) => s + c.card.Speed * c.count, 0) / aWithStats.reduce((s, c) => s + c.count, 0);
-                        const avgDmg = aWithStats.reduce((s, c) => s + c.card.Damage * c.count, 0) / aWithStats.reduce((s, c) => s + c.count, 0);
-                        analysis += `## Attack Statistics\\n\\n- Average Speed: ${avgSpd.toFixed(1)}\\n- Average Damage: ${avgDmg.toFixed(1)}\\n`;
-                        const az = { high: 0, mid: 0, low: 0 };
-                        attacks.forEach(a => { if (a.card?.AttackZone) az[a.card.AttackZone] += a.count; });
-                        analysis += `- Attack Zones: High(${az.high}) Mid(${az.mid}) Low(${az.low})\\n\\n`;
-                    }
-                }
-                
-                const fourOfs = cards.filter(c => c.count === 4 && c.card);
-                if (fourOfs.length > 0) {
-                    analysis += `## Key Cards (4-Copies)\\n\\n`;
-                    fourOfs.forEach(c => {
-                        const setInfo = availableSets.find(s => s.id === c.card.setId);
-                        analysis += `**${c.card.Name}** (${c.card.Cardtype})\\n`;
-                        analysis += `📦 From: ${setInfo?.name || c.card.setId}\\n`;
-                        if (c.multipleVersions) {
-                            analysis += `⚠️ Note: Found in ${c.allVersions.length} sets (using ${setInfo?.name || c.card.setId})\\n`;
-                        }
-                        if (c.card.Difficulty != null) analysis += `- Difficulty: ${c.card.Difficulty}, Control: ${c.card.Check}\\n`;
-                        if (c.card.Speed != null) analysis += `- Speed: ${c.card.Speed}, Damage: ${c.card.Damage}, Zone: ${c.card.AttackZone}\\n`;
+            const generateAIAnalysis = async (cards) => {
+                try {
+                    const cardDetails = cards.map(c => {
+                        if (!c.card) return `${c.count}x ${c.name} (NOT FOUND)`;
+                        let detail = `${c.count}x ${c.card.Name} (${c.card.Cardtype})`;
+                        if (c.card.Difficulty != null) detail += ` - Diff: ${c.card.Difficulty}, Control: ${c.card.Check}`;
+                        if (c.card.Speed != null) detail += ` - Speed: ${c.card.Speed}, Damage: ${c.card.Damage}, Zone: ${c.card.AttackZone}`;
+                        if (c.card.BlockZone) detail += ` - Block: ${c.card.BlockZone}+${c.card.BlockMod}`;
+                        if (c.card.Keywords?.length) detail += ` - Keywords: ${c.card.Keywords.map(k => k.Name).join(', ')}`;
                         if (c.card.Abilities?.length) {
-                            const cleanEffect = c.card.Abilities[0].Effect.replace(/"/g, '\\"').substring(0, 150);
-                            analysis += `- ${c.card.Abilities[0].Type}: ${cleanEffect}\\n`;
+                            detail += `\n  Abilities:`;
+                            c.card.Abilities.forEach(a => detail += `\n  - ${a.Type}${a.Cost ? ` (${a.Cost})` : ''}: ${a.Effect}`);
                         }
-                        analysis += '\\n';
+                        return detail;
+                    }).join('\n\n');
+
+                    const character = cards.find(c => c.card?.Cardtype === 'Character');
+                    let charDetails = '';
+                    if (character?.card) {
+                        const c = character.card;
+                        charDetails = `Character: ${c.Name}\nHand Size: ${c.HandSize}, Vitality: ${c.Health}\n`;
+                        if (c.Abilities?.length) {
+                            charDetails += 'Character Abilities:\n';
+                            c.Abilities.forEach(a => charDetails += `- ${a.Type}: ${a.Effect}\n`);
+                        }
+                    }
+
+                    const prompt = `You are an expert Universus TCG deck analyst. Analyze this deck and provide a DETAILED strategic breakdown.
+
+${charDetails}
+
+FULL DECK LIST:
+${cardDetails}
+
+Provide comprehensive analysis covering:
+1. **Win Condition** - How does this deck win? Primary kill route with exact damage calculations
+2. **Key Combos** - Important card interactions and synergies (be specific with card names)
+3. **Gameplay Strategy** - Turn-by-turn gameplay and ideal sequences
+4. **Core Engine** - Essential cards and how they work together
+5. **Strengths & Weaknesses** - What this deck does well and its vulnerabilities
+
+Be specific with card names, exact numbers, damage calculations, and gameplay sequences.`;
+
+                    const response = await fetch('https://api.anthropic.com/v1/messages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: 'claude-sonnet-4-20250514',
+                            max_tokens: 2000,
+                            messages: [{ role: 'user', content: prompt }]
+                        })
                     });
+
+                    if (!response.ok) throw new Error(`API error: ${response.status}`);
+                    const data = await response.json();
+                    return data.content?.find(c => c.type === 'text')?.text || 'Analysis failed';
+                } catch (err) {
+                    console.error('AI failed:', err);
+                    return `⚠️ AI Strategic Analysis unavailable. Error: ${err.message}`;
                 }
-                
-                const missing = cards.filter(c => !c.card);
-                if (missing.length > 0) {
-                    analysis += `\\n⚠️ **Cards Not Found:**\\n`;
-                    missing.forEach(c => analysis += `- ${c.count}x ${c.name}\\n`);
-                }
-                
-                return analysis;
             };
             
-            const analyzeDeck = () => {
+            const analyzeDeck = async () => {
                 if (!deckInput.trim() || !deckName.trim()) { setError('Enter deck name and list'); return; }
-                if (Object.keys(cardDatabase).length === 0) { setError('Load card sets first!'); return; }
+                if (Object.keys(cardDatabase).length === 0) { setError('Load sets first!'); return; }
                 setIsAnalyzing(true);
                 setError('');
                 try {
-                    const cards = parseDeckList(deckInput);
-                    const analysis = generateAnalysis(cards);
-                    setDecks([...decks, { 
-                        id: Date.now(), 
-                        name: deckName, 
-                        deckList: deckInput, 
-                        analysis, 
-                        createdAt: new Date().toISOString() 
-                    }]);
+                    const cards = deckInput.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line && !line.startsWith('['))
+                        .map(line => {
+                            const match = line.match(/^(\d+)\s+(.+)$/);
+                            if (match) {
+                                const count = parseInt(match[1]);
+                                const cardName = match[2].trim();
+                                const cardVersions = cardDatabase[cardName.toLowerCase()];
+                                return { count, card: cardVersions?.[0], name: cardName };
+                            }
+                            return null;
+                        })
+                        .filter(Boolean);
+                    
+                    const aiAnalysis = await generateAIAnalysis(cards);
+                    setDecks([...decks, { id: Date.now(), name: deckName, deckList: deckInput, analysis: aiAnalysis, createdAt: new Date().toISOString() }]);
                     setDeckInput('');
                     setDeckName('');
                     setSuggestedSets([]);
                     setActiveTab('library');
                 } catch (err) {
-                    setError('Analysis failed.');
-                    console.error(err);
+                    setError('Analysis failed: ' + err.message);
                 } finally {
                     setIsAnalyzing(false);
                 }
@@ -367,8 +263,8 @@
                 <div className="app">
                     <div className="header">
                         <h1 className="title">Universus Deck Analyzer</h1>
-                        <p className="subtitle">Community Edition - Multi-Set Support</p>
-                        {loadedSets.length > 0 && <p className="status">✅ {loadedSets.length} sets | {Object.keys(cardDatabase).reduce((sum, key) => sum + cardDatabase[key].length, 0)} card versions loaded</p>}
+                        <p className="subtitle">AI-Powered Strategic Analysis</p>
+                        {loadedSets.length > 0 && <p className="status">✅ {loadedSets.length} sets | {Object.keys(cardDatabase).reduce((s, k) => s + cardDatabase[k].length, 0)} cards loaded</p>}
                     </div>
                     
                     <div className="tabs">
@@ -380,97 +276,59 @@
                     
                     {activeTab === 'analyze' && (
                         <div className="card">
-                            <h2 className="card-title">Analyze Deck</h2>
-                            {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ No sets loaded. Use "Detect Needed Sets" or go to Settings.</div>}
-                            {error && <div className="alert alert-error">{error}</div>}
-                            
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1.5rem'}}>Analyze Deck with AI</h2>
+                            {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ No sets loaded. Use "Detect Needed Sets".</div>}
+                            {error && <div className="alert alert-warning">{error}</div>}
                             {isDetecting && detectProgress.total > 0 && (
                                 <div className="progress-box">
-                                    <div className="progress-text">Scanning sets... {detectProgress.current}/{detectProgress.total}</div>
-                                    <div className="progress-bar">
-                                        <div className="progress-fill" style={{width: `${(detectProgress.current / detectProgress.total) * 100}%`}}></div>
-                                    </div>
+                                    <div style={{color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '0.5rem'}}>Scanning... {detectProgress.current}/{detectProgress.total}</div>
+                                    <div className="progress-bar"><div className="progress-fill" style={{width: `${(detectProgress.current / detectProgress.total) * 100}%`}}></div></div>
                                 </div>
                             )}
-                            
                             {suggestedSets.length > 0 && !isDetecting && (
-                                <div className="smart-load-box">
-                                    <div className="smart-load-title">🎯 Found {suggestedSets.length} Set{suggestedSets.length !== 1 ? 's' : ''} Needed:</div>
-                                    <div className="smart-load-sets">
-                                        {suggestedSets.map(setId => {
-                                            const set = availableSets.find(s => s.id === setId);
-                                            return set ? set.name || setId : setId;
-                                        }).join(', ')}
-                                    </div>
+                                <div className="smart-box">
+                                    <div style={{color: '#93c5fd', fontWeight: 600, marginBottom: '0.5rem'}}>🎯 Found {suggestedSets.length} sets needed</div>
+                                    <div style={{color: '#dbeafe', fontSize: '0.875rem'}}>{suggestedSets.map(id => availableSets.find(s => s.id === id)?.name || id).join(', ')}</div>
                                 </div>
                             )}
-                            
-                            <div className="form-group">
-                                <label className="label">Deck Name</label>
-                                <input type="text" className="input" value={deckName} onChange={(e) => setDeckName(e.target.value)} placeholder="My Deck" />
+                            <div style={{marginBottom: '1.5rem'}}>
+                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem'}}>Deck Name</label>
+                                <input className="input" value={deckName} onChange={e => setDeckName(e.target.value)} placeholder="My Deck" />
                             </div>
-                            <div className="form-group">
-                                <label className="label">Deck List</label>
-                                <textarea className="textarea" value={deckInput} onChange={(e) => setDeckInput(e.target.value)} placeholder="1 Character&#10;4 Card Name&#10;..." />
+                            <div style={{marginBottom: '1.5rem'}}>
+                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem'}}>Deck List</label>
+                                <textarea className="textarea" value={deckInput} onChange={e => setDeckInput(e.target.value)} placeholder="1 Character&#10;4 Card Name..." />
                             </div>
-                            
-                            <button onClick={detectNeededSets} disabled={isDetecting || !deckInput.trim()} className="btn btn-secondary">
-                                {isDetecting ? <span className="loading-spinner"><span className="spinner"></span>Detecting (This may take ~30 sec)...</span> : '🔍 Detect Needed Sets (Scans All 99 Sets)'}
+                            <button className="btn btn-secondary" onClick={detectNeededSets} disabled={isDetecting || !deckInput.trim()}>
+                                {isDetecting ? '🔍 Detecting...' : '🔍 Detect Needed Sets'}
                             </button>
-                            
                             {suggestedSets.length > 0 && (
-                                <button onClick={loadSets} disabled={isLoadingSets} className="btn btn-primary" style={{marginTop: '0.75rem'}}>
-                                    {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading...</span> : `Load ${suggestedSets.length} Detected Set${suggestedSets.length !== 1 ? 's' : ''}`}
+                                <button className="btn btn-primary" onClick={loadSets} disabled={isLoadingSets}>
+                                    {isLoadingSets ? 'Loading...' : `Load ${suggestedSets.length} Sets`}
                                 </button>
                             )}
-                            
-                            <button onClick={analyzeDeck} disabled={isAnalyzing || Object.keys(cardDatabase).length === 0} className="btn btn-primary" style={{marginTop: '0.75rem'}}>
-                                {isAnalyzing ? 'Analyzing...' : 'Analyze Deck'}
+                            <button className="btn btn-primary" onClick={analyzeDeck} disabled={isAnalyzing || Object.keys(cardDatabase).length === 0}>
+                                {isAnalyzing ? <span>🤖 Analyzing with AI... <span className="spinner"></span></span> : '🤖 Analyze with AI'}
                             </button>
-                        </div>
-                    )}
-                    
-                    {activeTab === 'settings' && (
-                        <div className="card">
-                            <h2 className="card-title">Manual Load</h2>
-                            <p style={{marginBottom: '1rem', color: '#cbd5e1'}}>
-                                {availableSets.length} sets available | {selectedSets.length} selected
-                            </p>
-                            <div className="checkbox-grid">
-                                {availableSets.map(set => (
-                                    <label key={set.id} className="checkbox-label">
-                                        <input type="checkbox" className="checkbox" checked={selectedSets.includes(set.id)} onChange={(e) => {
-                                            setSelectedSets(e.target.checked ? [...selectedSets, set.id] : selectedSets.filter(id => id !== set.id));
-                                        }} />
-                                        <span className="set-name">{set.name || set.id}</span>
-                                        {loadedSets.includes(set.id) && <span className="set-check">✓</span>}
-                                    </label>
-                                ))}
-                            </div>
-                            <button onClick={loadSets} disabled={isLoadingSets || selectedSets.length === 0} className="btn btn-primary">
-                                {isLoadingSets ? <span className="loading-spinner"><span className="spinner"></span>Loading ({loadedSets.length}/{selectedSets.length})</span> : `Load ${selectedSets.length} Sets`}
-                            </button>
-                            {error && <div className="alert alert-warning" style={{marginTop: '1rem'}}>{error}</div>}
                         </div>
                     )}
                     
                     {activeTab === 'library' && (
                         <div className="card">
-                            <h2 className="card-title">Library</h2>
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1.5rem'}}>Library</h2>
                             {decks.length === 0 ? (
-                                <div className="empty"><p className="empty-title">No decks yet!</p></div>
+                                <div style={{textAlign: 'center', padding: '4rem', color: '#64748b'}}>No decks yet!</div>
                             ) : (
-                                <div className="deck-list">
+                                <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
                                     {decks.map(deck => (
-                                        <div key={deck.id} className="deck-item" onClick={() => { setSelectedDeck(deck); setActiveTab('view'); }}>
-                                            <div className="deck-header">
+                                        <div key={deck.id} onClick={() => { setSelectedDeck(deck); setActiveTab('view'); }} style={{background: '#0f172a', border: '2px solid #334155', borderRadius: '10px', padding: '1.25rem', cursor: 'pointer'}}>
+                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                                 <div>
-                                                    <h3 className="deck-title">{deck.name}</h3>
-                                                    <p className="deck-date">{new Date(deck.createdAt).toLocaleDateString()}</p>
+                                                    <h3 style={{fontSize: '1.375rem', fontWeight: 700, color: '#22d3ee'}}>{deck.name}</h3>
+                                                    <p style={{color: '#64748b', fontSize: '0.75rem'}}>{new Date(deck.createdAt).toLocaleDateString()}</p>
                                                 </div>
-                                                <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete?')) { setDecks(decks.filter(d => d.id !== deck.id)); const n = {...notes}; delete n[deck.id]; setNotes(n); setSelectedDeck(null); } }} className="btn btn-danger btn-small">Delete</button>
+                                                <button onClick={e => { e.stopPropagation(); if(confirm('Delete?')) { setDecks(decks.filter(d => d.id !== deck.id)); setSelectedDeck(null); }}} style={{padding: '0.625rem 1.25rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>Delete</button>
                                             </div>
-                                            {notes[deck.id]?.length > 0 && <p className="deck-notes">📝 {notes[deck.id].length} notes</p>}
                                         </div>
                                     ))}
                                 </div>
@@ -480,39 +338,37 @@
                     
                     {activeTab === 'view' && selectedDeck && (
                         <div className="card">
-                            <div className="section-actions">
-                                <h2 className="card-title" style={{marginBottom: 0}}>{selectedDeck.name}</h2>
-                                <button onClick={() => setActiveTab('library')} className="btn btn-back btn-small">← Back</button>
+                            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem'}}>
+                                <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee'}}>{selectedDeck.name}</h2>
+                                <button onClick={() => setActiveTab('library')} style={{padding: '0.625rem 1.25rem', background: '#334155', color: '#e2e8f0', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>← Back</button>
                             </div>
-                            <div className="section">
-                                <h3 className="section-title">Deck List</h3>
-                                <pre className="decklist-pre">{selectedDeck.deckList}</pre>
-                            </div>
-                            <div className="section">
-                                <h3 className="section-title">Analysis</h3>
-                                <div className="analysis">{selectedDeck.analysis}</div>
+                            <div style={{marginBottom: '2rem'}}>
+                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#ec4899', marginBottom: '1rem'}}>Deck List</h3>
+                                <pre style={{background: '#0f172a', borderRadius: '8px', padding: '1.5rem', fontFamily: 'monospace', fontSize: '0.875rem', whiteSpace: 'pre-wrap', color: '#cbd5e1'}}>{selectedDeck.deckList}</pre>
                             </div>
                             <div>
-                                <div className="section-actions">
-                                    <h3 className="section-title" style={{marginBottom: 0}}>Notes</h3>
-                                    <button onClick={() => { const note = prompt('Add note:'); if (note) setNotes({...notes, [selectedDeck.id]: [...(notes[selectedDeck.id] || []), { id: Date.now(), text: note, timestamp: new Date().toISOString() }]}); }} className="btn btn-success btn-small">+ Note</button>
-                                </div>
-                                {notes[selectedDeck.id]?.length > 0 ? (
-                                    <div className="note-list">
-                                        {notes[selectedDeck.id].map(note => (
-                                            <div key={note.id} className="note-item">
-                                                <div className="note-header">
-                                                    <span className="note-date">{new Date(note.timestamp).toLocaleString()}</span>
-                                                    <button onClick={() => setNotes({...notes, [selectedDeck.id]: notes[selectedDeck.id].filter(n => n.id !== note.id)})} className="note-delete">Delete</button>
-                                                </div>
-                                                <p className="note-text">{note.text}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p style={{color: '#64748b', fontSize: '0.875rem'}}>No notes</p>
-                                )}
+                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#ec4899', marginBottom: '1rem'}}>🤖 AI Strategic Analysis</h3>
+                                <div className="analysis">{selectedDeck.analysis}</div>
                             </div>
+                        </div>
+                    )}
+                    
+                    {activeTab === 'settings' && (
+                        <div className="card">
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1.5rem'}}>Manual Load</h2>
+                            <p style={{marginBottom: '1rem', color: '#cbd5e1'}}>{availableSets.length} sets available</p>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem', maxHeight: '400px', overflow: 'auto', padding: '0.5rem', background: '#0f172a', borderRadius: '8px', marginBottom: '1.5rem'}}>
+                                {availableSets.map(set => (
+                                    <label key={set.id} style={{display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: '#1e293b', border: '1px solid #334155', borderRadius: '6px', cursor: 'pointer'}}>
+                                        <input type="checkbox" checked={selectedSets.includes(set.id)} onChange={e => setSelectedSets(e.target.checked ? [...selectedSets, set.id] : selectedSets.filter(id => id !== set.id))} style={{width: '1.125rem', height: '1.125rem'}} />
+                                        <span style={{fontSize: '0.875rem', fontWeight: 600}}>{set.name || set.id}</span>
+                                        {loadedSets.includes(set.id) && <span style={{color: '#22c55e', fontSize: '0.75rem', marginLeft: 'auto'}}>✓</span>}
+                                    </label>
+                                ))}
+                            </div>
+                            <button className="btn btn-primary" onClick={loadSets} disabled={isLoadingSets || selectedSets.length === 0}>
+                                {isLoadingSets ? `Loading (${loadedSets.length}/${selectedSets.length})...` : `Load ${selectedSets.length} Sets`}
+                            </button>
                         </div>
                     )}
                 </div>
