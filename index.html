@@ -59,9 +59,6 @@
         body.dark .tldr-box { background: #1e293b; border: 2px solid #14b8a6; }
         body.dark .tldr-title { color: #14b8a6; }
         body.dark .beginner-badge { background: #14b8a6; color: #0f172a; }
-        body.dark .card-tooltip { color: #5eead4; border-bottom-color: #5eead4; }
-        body.dark .card-tooltip-content { background: #1e293b; border-color: #14b8a6; color: #cbd5e1; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        body.dark .card-stat { background: #0f172a; }
         body.dark .glossary-section { background: #0f172a; border: 1px solid #475569; }
         
         /* Light Theme */
@@ -111,9 +108,6 @@
         body.light .tldr-box { background: #f0fdfa; border: 2px solid #14b8a6; }
         body.light .tldr-title { color: #0d9488; }
         body.light .beginner-badge { background: #14b8a6; color: #ffffff; }
-        body.light .card-tooltip { color: #0d9488; border-bottom-color: #0d9488; }
-        body.light .card-tooltip-content { background: #ffffff; border-color: #14b8a6; color: #475569; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
-        body.light .card-stat { background: #f8fafc; }
         body.light .glossary-section { background: #f8fafc; border: 1px solid #cbd5e1; }
         
         /* Common Styles */
@@ -172,96 +166,6 @@
         .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: 0.3s; border-radius: 50%; }
         input:checked + .toggle-slider { background-color: #14b8a6; }
         input:checked + .toggle-slider:before { transform: translateX(24px); }
-        
-        /* Card Tooltip Styles */
-        .card-tooltip { 
-            position: relative; 
-            cursor: help; 
-            border-bottom: 2px solid; 
-            padding-bottom: 1px; 
-            font-weight: 600;
-            transition: all 0.2s; 
-        }
-        .card-tooltip:hover { opacity: 0.8; }
-        .card-tooltip-content { 
-            visibility: hidden; 
-            position: absolute; 
-            z-index: 1000; 
-            bottom: 125%; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            padding: 1.25rem; 
-            border-radius: 12px; 
-            width: 350px; 
-            border: 2px solid;
-            font-size: 0.875rem; 
-            line-height: 1.6; 
-            font-weight: 400;
-            pointer-events: none;
-        }
-        .card-tooltip:hover .card-tooltip-content { 
-            visibility: visible; 
-            animation: cardTooltipFade 0.2s; 
-        }
-        @keyframes cardTooltipFade { 
-            from { opacity: 0; transform: translateX(-50%) translateY(-5px); } 
-            to { opacity: 1; transform: translateX(-50%) translateY(0); } 
-        }
-        .card-tooltip-header { 
-            font-size: 1.1rem; 
-            font-weight: 700; 
-            margin-bottom: 0.75rem; 
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .card-type-badge {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            background: rgba(20, 184, 166, 0.2);
-            font-weight: 600;
-        }
-        .card-stats { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 0.5rem; 
-            margin-bottom: 0.75rem; 
-        }
-        .card-stat { 
-            padding: 0.5rem; 
-            border-radius: 6px; 
-            font-size: 0.8rem; 
-        }
-        .card-stat-label { 
-            font-weight: 600; 
-            margin-bottom: 0.15rem; 
-            opacity: 0.8;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .card-abilities { 
-            margin-top: 0.75rem; 
-            padding-top: 0.75rem; 
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .card-ability { 
-            margin-bottom: 0.5rem; 
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
-        .card-ability-type {
-            font-weight: 600;
-            color: #14b8a6;
-        }
-        .card-set {
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
         
         /* Glossary Styles */
         .glossary-section { border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
@@ -623,98 +527,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                 }
             };
             
-            const addCardTooltips = (text, cards) => {
-                if (!cards || cards.length === 0) return text;
-                
-                let result = text;
-                
-                // Create card lookup by name
-                const cardLookup = {};
-                cards.forEach(c => {
-                    if (c.card) {
-                        cardLookup[c.card.Name.toLowerCase()] = c.card;
-                    }
-                });
-                
-                // Sort card names by length (longest first) to avoid partial matches
-                const cardNames = Object.keys(cardLookup).sort((a, b) => b.length - a.length);
-                
-                cardNames.forEach(cardNameLower => {
-                    const card = cardLookup[cardNameLower];
-                    const cardName = card.Name;
-                    
-                    // Create regex that matches the card name (case insensitive, word boundaries)
-                    const regex = new RegExp(`\\b(${cardName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi');
-                    
-                    // Build tooltip content
-                    let tooltipContent = `<div class="card-tooltip-header">🃏 ${cardName}`;
-                    if (card.Cardtype) {
-                        tooltipContent += `<span class="card-type-badge">${card.Cardtype}</span>`;
-                    }
-                    tooltipContent += `</div>`;
-                    
-                    tooltipContent += `<div class="card-stats">`;
-                    if (card.Difficulty != null) tooltipContent += `<div class="card-stat"><div class="card-stat-label">Difficulty</div>${card.Difficulty}</div>`;
-                    if (card.Check != null) tooltipContent += `<div class="card-stat"><div class="card-stat-label">Control</div>${card.Check}</div>`;
-                    if (card.Speed != null) tooltipContent += `<div class="card-stat"><div class="card-stat-label">Speed</div>${card.Speed}</div>`;
-                    if (card.Damage != null) tooltipContent += `<div class="card-stat"><div class="card-stat-label">Damage</div>${card.Damage}</div>`;
-                    if (card.AttackZone) tooltipContent += `<div class="card-stat"><div class="card-stat-label">Zone</div>${card.AttackZone}</div>`;
-                    if (card.BlockZone) tooltipContent += `<div class="card-stat"><div class="card-stat-label">Block</div>${card.BlockZone} +${card.BlockMod}</div>`;
-                    tooltipContent += `</div>`;
-                    
-                    if (card.Keywords && card.Keywords.length > 0) {
-                        tooltipContent += `<div style="margin-top:0.5rem;font-size:0.8rem;">`;
-                        tooltipContent += `<strong>Keywords:</strong> ${card.Keywords.map(k => k.Name).join(', ')}`;
-                        tooltipContent += `</div>`;
-                    }
-                    
-                    if (card.Abilities && card.Abilities.length > 0) {
-                        tooltipContent += `<div class="card-abilities">`;
-                        tooltipContent += `<div style="font-weight:600;margin-bottom:0.5rem;font-size:0.85rem;">📝 Abilities:</div>`;
-                        card.Abilities.forEach(ability => {
-                            tooltipContent += `<div class="card-ability">`;
-                            tooltipContent += `<span class="card-ability-type">${ability.Type}:</span> `;
-                            tooltipContent += `${ability.Effect}`;
-                            tooltipContent += `</div>`;
-                        });
-                        tooltipContent += `</div>`;
-                    }
-                    
-                    if (card.setId) {
-                        const setInfo = availableSets.find(s => s.id === card.setId);
-                        tooltipContent += `<div class="card-set">📦 ${setInfo?.name || card.setId}</div>`;
-                    }
-                    
-                    const replacement = `<span class="card-tooltip">$1<span class="card-tooltip-content">${tooltipContent}</span></span>`;
-                    
-                    // Replace, but only once per occurrence to avoid nested tooltips
-                    let lastIndex = 0;
-                    let newResult = '';
-                    let match;
-                    
-                    while ((match = regex.exec(result)) !== null) {
-                        // Check if this match is already inside a tooltip
-                        const beforeMatch = result.substring(0, match.index);
-                        const openTooltips = (beforeMatch.match(/<span class="card-tooltip">/g) || []).length;
-                        const closeTooltips = (beforeMatch.match(/<\/span><\/span>/g) || []).length;
-                        
-                        if (openTooltips === closeTooltips) {
-                            // Not inside a tooltip, safe to replace
-                            newResult += result.substring(lastIndex, match.index);
-                            newResult += result.substring(match.index, match.index + match[0].length).replace(regex, replacement);
-                            lastIndex = match.index + match[0].length;
-                        }
-                        
-                        // Reset regex lastIndex to continue
-                        regex.lastIndex = match.index + 1;
-                    }
-                    
-                    newResult += result.substring(lastIndex);
-                    result = newResult;
-                });
-                
-                return result;
-            };
+
             
             const parseAnalysis = (analysis) => {
                 const sections = [];
@@ -787,7 +600,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                             <h2 style={{fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem'}}>Analyze Deck</h2>
                             {beginnerMode && (
                                 <div className="alert alert-info">
-                                    🎓 <strong>Beginner Mode Active:</strong> Analysis will use simple language with inline definitions. Hover over card names to see their stats and abilities!
+                                    🎓 <strong>Beginner Mode Active:</strong> Analysis will use simple language with inline definitions for game terms.
                                 </div>
                             )}
                             {!apiKey && (
@@ -860,7 +673,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                         return (
                             <div className="card">
                                 {beginnerMode && (
-                                    <div className="beginner-badge">🎓 Beginner Mode Active - Hover over card names to see details</div>
+                                    <div className="beginner-badge">🎓 Beginner Mode Active - Inline definitions included</div>
                                 )}
                                 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem'}}>
                                     <h2 style={{fontSize: '1.75rem', fontWeight: 700}}>{selectedDeck.name}</h2>
@@ -907,7 +720,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="analysis" dangerouslySetInnerHTML={{ __html: addCardTooltips(marked.parse(sections[activeAnalysisTab].content), deckCards) }} />
+                                            <div className="analysis" dangerouslySetInnerHTML={{ __html: marked.parse(sections[activeAnalysisTab].content) }} />
                                         )}
                                     </div>
                                 </div>
@@ -922,7 +735,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                             <div className="api-key-section">
                                 <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>🎓 Beginner Mode</h3>
                                 <p style={{marginBottom: '1rem', lineHeight: 1.6}}>
-                                    Enable beginner-friendly mode for simplified analysis with inline definitions and card tooltips.
+                                    Enable beginner-friendly mode for simplified analysis with inline definitions.
                                 </p>
                                 <div className="beginner-toggle smart-box">
                                     <label className="toggle-switch">
@@ -934,7 +747,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                                             {beginnerMode ? '🎓 Beginner Mode ON' : '⚔️ Advanced Mode'}
                                         </div>
                                         <div style={{fontSize: '0.875rem', opacity: 0.8}}>
-                                            {beginnerMode ? 'Simple language, inline definitions, and card tooltips' : 'Detailed strategic analysis for experienced players'}
+                                            {beginnerMode ? 'Simple language, inline definitions, and step-by-step guides' : 'Detailed strategic analysis for experienced players'}
                                         </div>
                                     </div>
                                 </div>
