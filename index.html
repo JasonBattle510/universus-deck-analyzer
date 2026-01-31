@@ -11,191 +11,150 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #f9fafb; min-height: 100vh; }
+        
+        /* Dark Theme - Midnight Teal */
+        body.dark {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark .header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569; }
+        body.dark .title { color: #14b8a6; }
+        body.dark .subtitle { color: #cbd5e1; }
+        body.dark .status { color: #5eead4; }
+        body.dark .tab-active { background: #14b8a6; color: #0f172a; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4); }
+        body.dark .tab-inactive { background: #1e293b; color: #94a3b8; border: 1px solid #475569; }
+        body.dark .tab-inactive:hover { background: #334155; color: #cbd5e1; }
+        body.dark .card { background: #1e293b; border: 1px solid #475569; }
+        body.dark .btn-primary { background: #14b8a6; color: #0f172a; }
+        body.dark .btn-primary:hover { background: #5eead4; }
+        body.dark .btn-primary:disabled { background: #475569; color: #64748b; }
+        body.dark .btn-secondary { background: #334155; color: #cbd5e1; }
+        body.dark .btn-secondary:hover { background: #475569; }
+        body.dark .btn-success { background: #14b8a6; color: #0f172a; }
+        body.dark .alert { background: #1e293b; border-color: #14b8a6; color: #5eead4; }
+        body.dark .progress-box { background: #1e293b; border: 1px solid #475569; }
+        body.dark .progress-bar { background: #0f172a; }
+        body.dark .progress-fill { background: linear-gradient(90deg, #14b8a6, #5eead4); }
+        body.dark .smart-box { background: #1e293b; border: 2px solid #14b8a6; }
+        body.dark .input, body.dark .textarea { background: #0f172a; border: 1px solid #475569; color: #e2e8f0; }
+        body.dark .input:focus, body.dark .textarea:focus { border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1); }
+        body.dark .api-key-section { background: #0f172a; border: 2px solid #14b8a6; }
+        body.dark .analysis-tab-active { background: #14b8a6; color: #0f172a; }
+        body.dark .analysis-tab-inactive { background: #0f172a; color: #94a3b8; border: 1px solid #475569; }
+        body.dark .analysis-tab-inactive:hover { background: #334155; color: #cbd5e1; }
+        body.dark .analysis { background: #0f172a; color: #cbd5e1; }
+        body.dark .analysis h1 { color: #14b8a6; border-bottom: 2px solid #475569; }
+        body.dark .analysis h2 { color: #5eead4; }
+        body.dark .analysis h3 { color: #5eead4; }
+        body.dark .analysis h4 { color: #6ee7b7; }
+        body.dark .analysis strong { color: #14b8a6; }
+        body.dark .analysis code { background: #1e293b; color: #5eead4; border: 1px solid #475569; }
+        body.dark .analysis pre { background: #1e293b; border: 1px solid #475569; }
+        body.dark .analysis blockquote { border-left: 4px solid #14b8a6; }
+        body.dark .analysis hr { border-top: 2px solid #475569; }
+        body.dark .analysis a { color: #5eead4; }
+        body.dark .tldr-box { background: #1e293b; border: 2px solid #14b8a6; }
+        body.dark .tldr-title { color: #14b8a6; }
+        
+        /* Light Theme */
+        body.light {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1e293b;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.light .header { background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        body.light .title { color: #0d9488; }
+        body.light .subtitle { color: #475569; }
+        body.light .status { color: #0d9488; }
+        body.light .tab-active { background: #14b8a6; color: #ffffff; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3); }
+        body.light .tab-inactive { background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; }
+        body.light .tab-inactive:hover { background: #f8fafc; color: #334155; }
+        body.light .card { background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+        body.light .btn-primary { background: #14b8a6; color: #ffffff; }
+        body.light .btn-primary:hover { background: #0d9488; }
+        body.light .btn-primary:disabled { background: #cbd5e1; color: #94a3b8; }
+        body.light .btn-secondary { background: #f1f5f9; color: #475569; }
+        body.light .btn-secondary:hover { background: #e2e8f0; }
+        body.light .btn-success { background: #14b8a6; color: #ffffff; }
+        body.light .alert { background: #f0fdfa; border-color: #14b8a6; color: #0d9488; }
+        body.light .progress-box { background: #f8fafc; border: 1px solid #cbd5e1; }
+        body.light .progress-bar { background: #e2e8f0; }
+        body.light .progress-fill { background: linear-gradient(90deg, #14b8a6, #5eead4); }
+        body.light .smart-box { background: #f0fdfa; border: 2px solid #14b8a6; }
+        body.light .input, body.light .textarea { background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; }
+        body.light .input:focus, body.light .textarea:focus { border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1); }
+        body.light .api-key-section { background: #f0fdfa; border: 2px solid #14b8a6; }
+        body.light .analysis-tab-active { background: #14b8a6; color: #ffffff; }
+        body.light .analysis-tab-inactive { background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; }
+        body.light .analysis-tab-inactive:hover { background: #f8fafc; color: #334155; }
+        body.light .analysis { background: #ffffff; color: #475569; }
+        body.light .analysis h1 { color: #0d9488; border-bottom: 2px solid #cbd5e1; }
+        body.light .analysis h2 { color: #0f766e; }
+        body.light .analysis h3 { color: #14b8a6; }
+        body.light .analysis h4 { color: #2dd4bf; }
+        body.light .analysis strong { color: #0d9488; }
+        body.light .analysis code { background: #f8fafc; color: #0d9488; border: 1px solid #cbd5e1; }
+        body.light .analysis pre { background: #f8fafc; border: 1px solid #cbd5e1; }
+        body.light .analysis blockquote { border-left: 4px solid #14b8a6; color: #64748b; }
+        body.light .analysis hr { border-top: 2px solid #cbd5e1; }
+        body.light .analysis a { color: #0d9488; }
+        body.light .tldr-box { background: #f0fdfa; border: 2px solid #14b8a6; }
+        body.light .tldr-title { color: #0d9488; }
+        
+        /* Common Styles */
         .app { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-        .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #404040; border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
-        .title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: #ffffff; letter-spacing: -0.02em; }
-        .subtitle { color: #d1d5db; font-size: 1.125rem; font-weight: 500; }
-        .status { color: #93c5fd; font-size: 0.875rem; margin-top: 0.75rem; font-weight: 500; }
+        .header { border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; position: relative; }
+        .title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .subtitle { font-size: 1.125rem; font-weight: 500; }
+        .status { font-size: 0.875rem; margin-top: 0.75rem; font-weight: 500; }
+        .theme-toggle { position: absolute; top: 2rem; right: 2rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 50%; transition: all 0.2s; }
+        .theme-toggle:hover { transform: scale(1.1); }
         .tabs { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
         .tab { padding: 0.875rem 1.75rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-size: 1rem; }
-        .tab-active { background: #f9fafb; color: #0a0a0a; box-shadow: 0 4px 12px rgba(249, 250, 251, 0.3); }
-        .tab-inactive { background: #1a1a1a; color: #9ca3af; border: 1px solid #404040; }
-        .tab-inactive:hover { background: #2d2d2d; color: #d1d5db; }
-        .card { background: #1a1a1a; border: 1px solid #404040; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+        .card { border-radius: 12px; padding: 2rem; }
         .btn { width: 100%; padding: 1rem; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; border: none; transition: all 0.2s; margin-top: 0.75rem; }
-        .btn-primary { background: #f9fafb; color: #0a0a0a; }
-        .btn-primary:hover { background: #ffffff; transform: translateY(-1px); }
-        .btn-primary:disabled { background: #404040; color: #6b7280; cursor: not-allowed; }
-        .btn-secondary { background: #2d2d2d; color: #d1d5db; }
-        .btn-secondary:hover { background: #404040; }
-        .btn-success { background: #93c5fd; color: #0a0a0a; }
-        .btn-success:hover { background: #bfdbfe; }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .btn:disabled { cursor: not-allowed; }
         .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid; }
-        .alert-warning { background: #1a1a1a; border-color: #93c5fd; color: #dbeafe; }
-        .alert-info { background: #1a1a1a; border-color: #93c5fd; color: #dbeafe; }
-        .alert-success { background: #1a1a1a; border-color: #93c5fd; color: #dbeafe; }
-        .progress-box { background: #1a1a1a; border: 1px solid #404040; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-        .progress-bar { width: 100%; height: 8px; background: #0a0a0a; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #93c5fd, #dbeafe); transition: width 0.3s; }
-        .smart-box { background: #1a1a1a; border: 2px solid #93c5fd; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
-        .input, .textarea { width: 100%; background: #0a0a0a; border: 1px solid #404040; border-radius: 8px; padding: 0.875rem; color: #f9fafb; font-size: 0.95rem; }
-        .input:focus, .textarea:focus { outline: none; border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.1); }
+        .progress-box { border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .progress-bar { width: 100%; height: 8px; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 0.3s; }
+        .smart-box { border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+        .input, .textarea { width: 100%; border-radius: 8px; padding: 0.875rem; font-size: 0.95rem; }
         .textarea { font-family: 'Courier New', monospace; resize: vertical; min-height: 250px; }
-        .spinner { border: 3px solid #404040; border-top-color: transparent; border-radius: 50%; width: 1.5rem; height: 1.5rem; animation: spin 0.8s linear infinite; display: inline-block; }
+        .spinner { border: 3px solid rgba(255,255,255,0.2); border-top-color: transparent; border-radius: 50%; width: 1.5rem; height: 1.5rem; animation: spin 0.8s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .api-key-section { background: #0a0a0a; border: 2px solid #93c5fd; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
-        
-        /* Analysis Tabs */
-        .analysis-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; padding: 1rem; background: #1a1a1a; border-radius: 10px; border: 1px solid #404040; }
+        .api-key-section { border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        .analysis-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; padding: 1rem; border-radius: 10px; }
         .analysis-tab { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; border: none; white-space: nowrap; }
-        .analysis-tab-active { background: #f9fafb; color: #0a0a0a; box-shadow: 0 2px 8px rgba(249, 250, 251, 0.2); }
-        .analysis-tab-inactive { background: #0a0a0a; color: #9ca3af; border: 1px solid #404040; }
-        .analysis-tab-inactive:hover { background: #2d2d2d; color: #d1d5db; }
-        
-        /* Analysis Content Styling */
-        .analysis { 
-            background: #0a0a0a; 
-            border-radius: 12px; 
-            padding: 2.5rem; 
-            font-size: 0.95rem; 
-            line-height: 1.8; 
-            color: #d1d5db;
-            font-weight: 400;
-            min-height: 400px;
-        }
-        .analysis h1 { 
-            display: block;
-            color: #f9fafb; 
-            font-size: 1.875rem; 
-            margin-top: 0;
-            margin-bottom: 1.25rem; 
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            border-bottom: 2px solid #404040;
-            padding-bottom: 0.75rem;
-        }
-        .analysis h2 { 
-            display: block;
-            color: #f9fafb; 
-            font-size: 1.5rem; 
-            margin-top: 2rem; 
-            margin-bottom: 1.25rem; 
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        .analysis h3 { 
-            display: block;
-            color: #dbeafe; 
-            font-size: 1.25rem; 
-            margin-top: 1.75rem; 
-            margin-bottom: 1rem; 
-            font-weight: 600;
-        }
-        .analysis h4 {
-            display: block;
-            color: #93c5fd;
-            font-size: 1.05rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
-        .analysis p { 
-            display: block;
-            margin-bottom: 1.25rem; 
-            line-height: 1.8;
-        }
-        .analysis ul, .analysis ol { 
-            display: block;
-            margin-left: 1.75rem; 
-            margin-bottom: 1.5rem;
-            margin-top: 0.75rem;
-        }
-        .analysis li { 
-            display: list-item;
-            margin-bottom: 0.75rem;
-            padding-left: 0.5rem;
-            line-height: 1.7;
-        }
-        .analysis ul ul, .analysis ol ol,
-        .analysis ul ol, .analysis ol ul {
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            margin-left: 1.5rem;
-        }
-        .analysis li > p {
-            margin-bottom: 0.5rem;
-        }
-        .analysis strong, .analysis b { 
-            color: #f9fafb; 
-            font-weight: 600;
-        }
-        .analysis em, .analysis i {
-            color: #dbeafe;
-            font-style: italic;
-        }
-        .analysis code { 
-            background: #1a1a1a; 
-            padding: 0.25rem 0.5rem; 
-            border-radius: 4px; 
-            font-family: 'Courier New', monospace; 
-            font-size: 0.875rem; 
-            color: #93c5fd;
-            border: 1px solid #404040;
-        }
-        .analysis pre { 
-            display: block;
-            background: #1a1a1a; 
-            padding: 1.25rem; 
-            border-radius: 8px; 
-            overflow: auto; 
-            margin-bottom: 1.5rem;
-            border: 1px solid #404040;
-        }
-        .analysis pre code { 
-            background: none; 
-            padding: 0;
-            border: none;
-            color: #dbeafe;
-        }
-        .analysis blockquote { 
-            display: block;
-            border-left: 4px solid #93c5fd; 
-            padding-left: 1.25rem; 
-            margin-left: 0; 
-            margin-bottom: 1.5rem; 
-            color: #9ca3af; 
-            font-style: italic;
-        }
-        .analysis hr { 
-            display: block;
-            border: none; 
-            border-top: 2px solid #404040; 
-            margin: 2.5rem 0;
-        }
-        .analysis a {
-            color: #93c5fd;
-            text-decoration: underline;
-        }
-        .analysis a:hover {
-            color: #bfdbfe;
-        }
-        .tldr-box {
-            background: #1a1a1a;
-            border: 2px solid #93c5fd;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .tldr-title {
-            color: #f9fafb;
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
+        .analysis { border-radius: 12px; padding: 2.5rem; font-size: 0.95rem; line-height: 1.8; font-weight: 400; min-height: 400px; }
+        .analysis h1 { display: block; font-size: 1.875rem; margin-top: 0; margin-bottom: 1.25rem; font-weight: 700; letter-spacing: -0.025em; padding-bottom: 0.75rem; }
+        .analysis h2 { display: block; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+        .analysis h3 { display: block; font-size: 1.25rem; margin-top: 1.75rem; margin-bottom: 1rem; font-weight: 600; }
+        .analysis h4 { display: block; font-size: 1.05rem; margin-top: 1.5rem; margin-bottom: 0.75rem; font-weight: 600; }
+        .analysis p { display: block; margin-bottom: 1.25rem; line-height: 1.8; }
+        .analysis ul, .analysis ol { display: block; margin-left: 1.75rem; margin-bottom: 1.5rem; margin-top: 0.75rem; }
+        .analysis li { display: list-item; margin-bottom: 0.75rem; padding-left: 0.5rem; line-height: 1.7; }
+        .analysis ul ul, .analysis ol ol, .analysis ul ol, .analysis ol ul { margin-top: 0.5rem; margin-bottom: 0.5rem; margin-left: 1.5rem; }
+        .analysis li > p { margin-bottom: 0.5rem; }
+        .analysis strong, .analysis b { font-weight: 600; }
+        .analysis em, .analysis i { font-style: italic; }
+        .analysis code { padding: 0.25rem 0.5rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.875rem; }
+        .analysis pre { display: block; padding: 1.25rem; border-radius: 8px; overflow: auto; margin-bottom: 1.5rem; }
+        .analysis pre code { background: none; padding: 0; border: none; }
+        .analysis blockquote { display: block; padding-left: 1.25rem; margin-left: 0; margin-bottom: 1.5rem; font-style: italic; }
+        .analysis hr { display: block; border: none; margin: 2.5rem 0; }
+        .analysis a { text-decoration: underline; }
+        .tldr-box { border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+        .tldr-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
     </style>
 </head>
-<body>
+<body class="dark">
     <div id="root"></div>
     
     <script type="text/babel">
@@ -203,12 +162,7 @@
         const GITHUB_BASE = 'https://cdn.jsdelivr.net/gh/JasonBattle510/universus-deck-analyzer@main/UVS_Dataset-main';
         const WORKER_URL = 'https://red-dew-4e75.slothcedric.workers.dev';
         
-        marked.setOptions({
-            breaks: true,
-            gfm: true,
-            headerIds: false,
-            mangle: false
-        });
+        marked.setOptions({ breaks: true, gfm: true, headerIds: false, mangle: false });
         
         function App() {
             const [activeTab, setActiveTab] = useState('analyze');
@@ -229,6 +183,7 @@
             const [apiKey, setApiKey] = useState('');
             const [apiKeyInput, setApiKeyInput] = useState('');
             const [activeAnalysisTab, setActiveAnalysisTab] = useState(0);
+            const [theme, setTheme] = useState('dark');
             
             useEffect(() => {
                 const stored = localStorage.getItem('universus-decks-v3');
@@ -244,21 +199,25 @@
                     setApiKey(storedKey);
                     setApiKeyInput(storedKey);
                 }
+                const storedTheme = localStorage.getItem('theme') || 'dark';
+                setTheme(storedTheme);
+                document.body.className = storedTheme;
                 loadSetList();
             }, []);
             
             useEffect(() => {
                 if (decks.length > 0) {
-                    const lightDecks = decks.map(d => ({
-                        id: d.id,
-                        name: d.name,
-                        deckList: d.deckList,
-                        analysis: d.analysis,
-                        createdAt: d.createdAt
-                    }));
+                    const lightDecks = decks.map(d => ({ id: d.id, name: d.name, deckList: d.deckList, analysis: d.analysis, createdAt: d.createdAt }));
                     localStorage.setItem('universus-decks-v3', JSON.stringify({ decks: lightDecks, loadedSets }));
                 }
             }, [decks, loadedSets]);
+            
+            const toggleTheme = () => {
+                const newTheme = theme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+                document.body.className = newTheme;
+                localStorage.setItem('theme', newTheme);
+            };
             
             const saveApiKey = () => {
                 localStorage.setItem('anthropic-api-key', apiKeyInput);
@@ -291,14 +250,10 @@
                 setSuggestedSets([]);
                 setDetectProgress({ current: 0, total: availableSets.length });
                 
-                const cardNames = deckInput.split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line && !line.startsWith('['))
-                    .map(line => {
-                        const match = line.match(/^\d+\s+(.+)$/);
-                        return match ? match[1].trim().toLowerCase() : '';
-                    })
-                    .filter(Boolean);
+                const cardNames = deckInput.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('[')).map(line => {
+                    const match = line.match(/^\d+\s+(.+)$/);
+                    return match ? match[1].trim().toLowerCase() : '';
+                }).filter(Boolean);
                 
                 const neededSets = new Set();
                 for (let i = 0; i < availableSets.length; i++) {
@@ -309,9 +264,7 @@
                         if (!response.ok) continue;
                         const data = await response.json();
                         const setCardNames = Object.values(data.Cards).map(card => card.Name.toLowerCase());
-                        if (cardNames.some(name => setCardNames.includes(name))) {
-                            neededSets.add(set.id);
-                        }
+                        if (cardNames.some(name => setCardNames.includes(name))) neededSets.add(set.id);
                     } catch (err) { console.error(`Failed: ${set.id}`, err); }
                 }
                 setSuggestedSets(Array.from(neededSets));
@@ -346,9 +299,7 @@
             };
             
             const generateAIAnalysis = async (cards) => {
-                if (!apiKey) {
-                    return '⚠️ **AI Analysis Unavailable**\n\nPlease add your Anthropic API key in Settings.\n\nGet your key at: https://console.anthropic.com/';
-                }
+                if (!apiKey) return '⚠️ **AI Analysis Unavailable**\n\nPlease add your Anthropic API key in Settings.\n\nGet your key at: https://console.anthropic.com/';
                 
                 try {
                     const cardDetails = cards.map(c => {
@@ -407,10 +358,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
 
                     const response = await fetch(WORKER_URL, {
                         method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'x-api-key': apiKey
-                        },
+                        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
                         body: JSON.stringify({
                             model: 'claude-sonnet-4-20250514',
                             max_tokens: 2000,
@@ -437,20 +385,16 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                 setIsAnalyzing(true);
                 setError('');
                 try {
-                    const cards = deckInput.split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line && !line.startsWith('['))
-                        .map(line => {
-                            const match = line.match(/^(\d+)\s+(.+)$/);
-                            if (match) {
-                                const count = parseInt(match[1]);
-                                const cardName = match[2].trim();
-                                const cardVersions = cardDatabase[cardName.toLowerCase()];
-                                return { count, card: cardVersions?.[0], name: cardName };
-                            }
-                            return null;
-                        })
-                        .filter(Boolean);
+                    const cards = deckInput.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('[')).map(line => {
+                        const match = line.match(/^(\d+)\s+(.+)$/);
+                        if (match) {
+                            const count = parseInt(match[1]);
+                            const cardName = match[2].trim();
+                            const cardVersions = cardDatabase[cardName.toLowerCase()];
+                            return { count, card: cardVersions?.[0], name: cardName };
+                        }
+                        return null;
+                    }).filter(Boolean);
                     
                     const aiAnalysis = await generateAIAnalysis(cards);
                     setDecks([...decks, { id: Date.now(), name: deckName, deckList: deckInput, analysis: aiAnalysis, createdAt: new Date().toISOString() }]);
@@ -465,49 +409,30 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                 }
             };
             
-            // Parse analysis into sections
             const parseAnalysis = (analysis) => {
                 const sections = [];
                 const lines = analysis.split('\n');
                 let currentSection = { title: 'Overview', content: '' };
-                let inOverview = true;
                 
                 for (let line of lines) {
                     if (line.startsWith('## ')) {
-                        if (currentSection.content.trim()) {
-                            sections.push(currentSection);
-                        }
+                        if (currentSection.content.trim()) sections.push(currentSection);
                         currentSection = { title: line.replace('## ', '').trim(), content: '' };
-                        inOverview = false;
                     } else {
                         currentSection.content += line + '\n';
                     }
                 }
                 
-                if (currentSection.content.trim()) {
-                    sections.push(currentSection);
-                }
+                if (currentSection.content.trim()) sections.push(currentSection);
                 
-                // Generate TL;DR for overview
                 if (sections.length > 0 && sections[0].title === 'Overview') {
-                    const firstSection = sections[0];
                     const bullets = [];
-                    
-                    // Extract key points from other sections
                     sections.forEach(section => {
                         const firstPara = section.content.split('\n\n')[0];
-                        if (firstPara && firstPara.length < 200) {
-                            bullets.push(firstPara.replace(/^[•\-\*]\s*/, '').trim());
-                        }
+                        if (firstPara && firstPara.length < 200) bullets.push(firstPara.replace(/^[•\-\*]\s*/, '').trim());
                     });
                     
-                    const tldr = `<div class="tldr-box">
-                        <div class="tldr-title">📋 TL;DR</div>
-                        <ul>
-                            ${bullets.slice(0, 4).map(b => `<li>${b}</li>`).join('')}
-                        </ul>
-                    </div>`;
-                    
+                    const tldr = `<div class="tldr-box"><div class="tldr-title">📋 TL;DR</div><ul>${bullets.slice(0, 4).map(b => `<li>${b}</li>`).join('')}</ul></div>`;
                     sections[0].content = tldr + sections[0].content;
                 }
                 
@@ -517,6 +442,9 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
             return (
                 <div className="app">
                     <div className="header">
+                        <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+                            {theme === 'dark' ? '☀️' : '🌙'}
+                        </button>
                         <h1 className="title">Universus Deck Analyzer</h1>
                         <p className="subtitle">AI-Powered Strategic Analysis</p>
                         {loadedSets.length > 0 && <p className="status">✅ {loadedSets.length} sets | {Object.keys(cardDatabase).reduce((s, k) => s + cardDatabase[k].length, 0)} cards loaded</p>}
@@ -532,33 +460,33 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                     
                     {activeTab === 'analyze' && (
                         <div className="card">
-                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1.5rem'}}>Analyze Deck</h2>
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem'}}>Analyze Deck</h2>
                             {!apiKey && (
                                 <div className="alert alert-info">
                                     💡 Add your Anthropic API key in Settings to enable AI analysis!
-                                    <br/><a href="https://console.anthropic.com/" target="_blank" style={{color: '#93c5fd', textDecoration: 'underline'}}>Get API Key →</a>
+                                    <br/><a href="https://console.anthropic.com/" target="_blank">Get API Key →</a>
                                 </div>
                             )}
                             {Object.keys(cardDatabase).length === 0 && <div className="alert alert-warning">⚠️ No sets loaded. Use "Detect Needed Sets".</div>}
                             {error && <div className="alert alert-warning">{error}</div>}
                             {isDetecting && detectProgress.total > 0 && (
                                 <div className="progress-box">
-                                    <div style={{color: '#d1d5db', fontSize: '0.875rem', marginBottom: '0.5rem'}}>Scanning... {detectProgress.current}/{detectProgress.total}</div>
+                                    <div style={{fontSize: '0.875rem', marginBottom: '0.5rem'}}>Scanning... {detectProgress.current}/{detectProgress.total}</div>
                                     <div className="progress-bar"><div className="progress-fill" style={{width: `${(detectProgress.current / detectProgress.total) * 100}%`}}></div></div>
                                 </div>
                             )}
                             {suggestedSets.length > 0 && !isDetecting && (
                                 <div className="smart-box">
-                                    <div style={{color: '#dbeafe', fontWeight: 600, marginBottom: '0.5rem'}}>🎯 Found {suggestedSets.length} sets needed</div>
-                                    <div style={{color: '#93c5fd', fontSize: '0.875rem'}}>{suggestedSets.map(id => availableSets.find(s => s.id === id)?.name || id).join(', ')}</div>
+                                    <div style={{fontWeight: 600, marginBottom: '0.5rem'}}>🎯 Found {suggestedSets.length} sets needed</div>
+                                    <div style={{fontSize: '0.875rem'}}>{suggestedSets.map(id => availableSets.find(s => s.id === id)?.name || id).join(', ')}</div>
                                 </div>
                             )}
                             <div style={{marginBottom: '1.5rem'}}>
-                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', color: '#d1d5db'}}>Deck Name</label>
+                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem'}}>Deck Name</label>
                                 <input className="input" value={deckName} onChange={e => setDeckName(e.target.value)} placeholder="My Deck" />
                             </div>
                             <div style={{marginBottom: '1.5rem'}}>
-                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', color: '#d1d5db'}}>Deck List</label>
+                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem'}}>Deck List</label>
                                 <textarea className="textarea" value={deckInput} onChange={e => setDeckInput(e.target.value)} placeholder="1 Character&#10;4 Card Name..." />
                             </div>
                             <button className="btn btn-secondary" onClick={detectNeededSets} disabled={isDetecting || !deckInput.trim()}>
@@ -577,19 +505,19 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                     
                     {activeTab === 'library' && (
                         <div className="card">
-                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1.5rem'}}>Library</h2>
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem'}}>Library</h2>
                             {decks.length === 0 ? (
-                                <div style={{textAlign: 'center', padding: '4rem', color: '#6b7280'}}>No decks yet!</div>
+                                <div style={{textAlign: 'center', padding: '4rem'}}>No decks yet!</div>
                             ) : (
                                 <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
                                     {decks.map(deck => (
-                                        <div key={deck.id} onClick={() => { setSelectedDeck(deck); setActiveAnalysisTab(0); setActiveTab('view'); }} style={{background: '#0a0a0a', border: '1px solid #404040', borderRadius: '10px', padding: '1.25rem', cursor: 'pointer', transition: 'all 0.2s'}}>
+                                        <div key={deck.id} onClick={() => { setSelectedDeck(deck); setActiveAnalysisTab(0); setActiveTab('view'); }} style={{borderRadius: '10px', padding: '1.25rem', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid'}}>
                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                                 <div>
-                                                    <h3 style={{fontSize: '1.375rem', fontWeight: 700, color: '#f9fafb'}}>{deck.name}</h3>
-                                                    <p style={{color: '#6b7280', fontSize: '0.75rem'}}>{new Date(deck.createdAt).toLocaleDateString()}</p>
+                                                    <h3 style={{fontSize: '1.375rem', fontWeight: 700}}>{deck.name}</h3>
+                                                    <p style={{fontSize: '0.75rem', marginTop: '0.25rem'}}>{new Date(deck.createdAt).toLocaleDateString()}</p>
                                                 </div>
-                                                <button onClick={e => { e.stopPropagation(); if(confirm('Delete?')) { setDecks(decks.filter(d => d.id !== deck.id)); setSelectedDeck(null); }}} style={{padding: '0.625rem 1.25rem', background: '#404040', color: '#f9fafb', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>Delete</button>
+                                                <button onClick={e => { e.stopPropagation(); if(confirm('Delete?')) { setDecks(decks.filter(d => d.id !== deck.id)); setSelectedDeck(null); }}} style={{padding: '0.625rem 1.25rem', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>Delete</button>
                                             </div>
                                         </div>
                                     ))}
@@ -603,23 +531,19 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                         return (
                             <div className="card">
                                 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem'}}>
-                                    <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb'}}>{selectedDeck.name}</h2>
-                                    <button onClick={() => setActiveTab('library')} style={{padding: '0.625rem 1.25rem', background: '#2d2d2d', color: '#d1d5db', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>← Back</button>
+                                    <h2 style={{fontSize: '1.75rem', fontWeight: 700}}>{selectedDeck.name}</h2>
+                                    <button onClick={() => setActiveTab('library')} style={{padding: '0.625rem 1.25rem', border: 'none', borderRadius: '8px', cursor: 'pointer'}} className="btn-secondary">← Back</button>
                                 </div>
                                 <div style={{marginBottom: '2rem'}}>
-                                    <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>Deck List</h3>
-                                    <pre style={{background: '#0a0a0a', borderRadius: '8px', padding: '1.5rem', fontFamily: 'monospace', fontSize: '0.875rem', whiteSpace: 'pre-wrap', color: '#d1d5db', border: '1px solid #404040'}}>{selectedDeck.deckList}</pre>
+                                    <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>Deck List</h3>
+                                    <pre style={{borderRadius: '8px', padding: '1.5rem', fontFamily: 'monospace', fontSize: '0.875rem', whiteSpace: 'pre-wrap', border: '1px solid'}}>{selectedDeck.deckList}</pre>
                                 </div>
                                 <div>
-                                    <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>🤖 AI Strategic Analysis</h3>
+                                    <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>🤖 AI Strategic Analysis</h3>
                                     
                                     <div className="analysis-tabs">
                                         {sections.map((section, idx) => (
-                                            <button 
-                                                key={idx}
-                                                onClick={() => setActiveAnalysisTab(idx)}
-                                                className={`analysis-tab ${activeAnalysisTab === idx ? 'analysis-tab-active' : 'analysis-tab-inactive'}`}
-                                            >
+                                            <button key={idx} onClick={() => setActiveAnalysisTab(idx)} className={`analysis-tab ${activeAnalysisTab === idx ? 'analysis-tab-active' : 'analysis-tab-inactive'}`}>
                                                 {section.title}
                                             </button>
                                         ))}
@@ -635,23 +559,19 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                     
                     {activeTab === 'settings' && (
                         <div className="card">
-                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1.5rem'}}>Settings</h2>
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem'}}>Settings</h2>
                             
                             <div className="api-key-section">
-                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>🤖 AI Setup</h3>
-                                <p style={{color: '#d1d5db', marginBottom: '1rem', lineHeight: 1.6}}>
-                                    Add your Anthropic API key for AI strategic analysis.
-                                </p>
-                                <p style={{color: '#93c5fd', marginBottom: '1rem', fontSize: '0.875rem'}}>
-                                    Get API key: <a href="https://console.anthropic.com/" target="_blank" style={{color: '#dbeafe', textDecoration: 'underline'}}>console.anthropic.com</a>
+                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>🤖 AI Setup</h3>
+                                <p style={{marginBottom: '1rem', lineHeight: 1.6}}>Add your Anthropic API key for AI strategic analysis.</p>
+                                <p style={{marginBottom: '1rem', fontSize: '0.875rem'}}>
+                                    Get API key: <a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a>
                                     <br/>Cost: ~$0.03-0.05 per analysis
                                 </p>
                                 {apiKey ? (
                                     <div className="alert alert-success">
                                         ✅ API Key configured!
-                                        <button onClick={clearApiKey} style={{marginTop: '0.75rem', padding: '0.5rem 1rem', background: '#404040', color: '#f9fafb', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'block'}}>
-                                            Remove Key
-                                        </button>
+                                        <button onClick={clearApiKey} style={{marginTop: '0.75rem', padding: '0.5rem 1rem', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'block'}}>Remove Key</button>
                                     </div>
                                 ) : (
                                     <div>
@@ -661,14 +581,14 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                                 )}
                             </div>
                             
-                            <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>📦 Card Sets</h3>
-                            <p style={{marginBottom: '1rem', color: '#d1d5db'}}>{availableSets.length} sets available</p>
-                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem', maxHeight: '400px', overflow: 'auto', padding: '0.5rem', background: '#0a0a0a', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #404040'}}>
+                            <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>📦 Card Sets</h3>
+                            <p style={{marginBottom: '1rem'}}>{availableSets.length} sets available</p>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem', maxHeight: '400px', overflow: 'auto', padding: '0.5rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid'}}>
                                 {availableSets.map(set => (
-                                    <label key={set.id} style={{display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: '#1a1a1a', border: '1px solid #404040', borderRadius: '6px', cursor: 'pointer'}}>
+                                    <label key={set.id} style={{display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid', borderRadius: '6px', cursor: 'pointer'}}>
                                         <input type="checkbox" checked={selectedSets.includes(set.id)} onChange={e => setSelectedSets(e.target.checked ? [...selectedSets, set.id] : selectedSets.filter(id => id !== set.id))} style={{width: '1.125rem', height: '1.125rem'}} />
-                                        <span style={{fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db'}}>{set.name || set.id}</span>
-                                        {loadedSets.includes(set.id) && <span style={{color: '#93c5fd', fontSize: '0.75rem', marginLeft: 'auto'}}>✓</span>}
+                                        <span style={{fontSize: '0.875rem', fontWeight: 600}}>{set.name || set.id}</span>
+                                        {loadedSets.includes(set.id) && <span style={{fontSize: '0.75rem', marginLeft: 'auto'}}>✓</span>}
                                     </label>
                                 ))}
                             </div>
