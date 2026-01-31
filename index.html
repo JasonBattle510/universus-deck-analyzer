@@ -49,86 +49,100 @@
         /* Analysis Styling - Clean Monochrome */
         .analysis { 
             background: #0a0a0a; 
-            borderRadius: 12px; 
+            border-radius: 12px; 
             padding: 2.5rem; 
-            fontSize: 0.95rem; 
-            lineHeight: 1.8; 
+            font-size: 0.95rem; 
+            line-height: 1.8; 
             color: #d1d5db;
-            fontWeight: 400;
+            font-weight: 400;
         }
         .analysis h1 { 
+            display: block;
             color: #f9fafb; 
-            fontSize: 1.875rem; 
-            marginTop: 2rem; 
-            marginBottom: 1.25rem; 
-            fontWeight: 700;
-            letterSpacing: -0.025em;
-            borderBottom: 2px solid #404040;
-            paddingBottom: 0.75rem;
+            font-size: 1.875rem; 
+            margin-top: 2.5rem; 
+            margin-bottom: 1.25rem; 
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            border-bottom: 2px solid #404040;
+            padding-bottom: 0.75rem;
         }
-        .analysis h1:first-child { marginTop: 0; }
+        .analysis h1:first-child { margin-top: 0; }
         .analysis h2 { 
+            display: block;
             color: #f9fafb; 
-            fontSize: 1.5rem; 
-            marginTop: 2rem; 
-            marginBottom: 1rem; 
-            fontWeight: 700;
-            letterSpacing: -0.02em;
+            font-size: 1.5rem; 
+            margin-top: 2.25rem; 
+            margin-bottom: 1.25rem; 
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
         .analysis h3 { 
+            display: block;
             color: #dbeafe; 
-            fontSize: 1.125rem; 
-            marginTop: 1.5rem; 
-            marginBottom: 0.75rem; 
-            fontWeight: 600;
+            font-size: 1.25rem; 
+            margin-top: 1.75rem; 
+            margin-bottom: 1rem; 
+            font-weight: 600;
         }
         .analysis h4 {
+            display: block;
             color: #93c5fd;
-            fontSize: 1rem;
-            marginTop: 1.25rem;
-            marginBottom: 0.5rem;
-            fontWeight: 600;
+            font-size: 1.05rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
         }
         .analysis p { 
-            marginBottom: 1.25rem; 
-            lineHeight: 1.8;
+            display: block;
+            margin-bottom: 1.25rem; 
+            line-height: 1.8;
         }
         .analysis ul, .analysis ol { 
-            marginLeft: 1.75rem; 
-            marginBottom: 1.25rem;
-            lineHeight: 1.8;
+            display: block;
+            margin-left: 1.75rem; 
+            margin-bottom: 1.5rem;
+            margin-top: 0.75rem;
         }
         .analysis li { 
-            marginBottom: 0.75rem;
-            paddingLeft: 0.5rem;
+            display: list-item;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+            line-height: 1.7;
         }
-        .analysis ul ul, .analysis ol ol {
-            marginTop: 0.5rem;
-            marginBottom: 0.5rem;
+        .analysis ul ul, .analysis ol ol,
+        .analysis ul ol, .analysis ol ul {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            margin-left: 1.5rem;
+        }
+        .analysis li > p {
+            margin-bottom: 0.5rem;
         }
         .analysis strong, .analysis b { 
             color: #f9fafb; 
-            fontWeight: 600;
+            font-weight: 600;
         }
         .analysis em, .analysis i {
             color: #dbeafe;
-            fontStyle: italic;
+            font-style: italic;
         }
         .analysis code { 
             background: #1a1a1a; 
             padding: 0.25rem 0.5rem; 
-            borderRadius: 4px; 
-            fontFamily: 'Courier New', monospace; 
-            fontSize: 0.875rem; 
+            border-radius: 4px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 0.875rem; 
             color: #93c5fd;
             border: 1px solid #404040;
         }
         .analysis pre { 
+            display: block;
             background: #1a1a1a; 
             padding: 1.25rem; 
-            borderRadius: 8px; 
+            border-radius: 8px; 
             overflow: auto; 
-            marginBottom: 1.5rem;
+            margin-bottom: 1.5rem;
             border: 1px solid #404040;
         }
         .analysis pre code { 
@@ -138,21 +152,23 @@
             color: #dbeafe;
         }
         .analysis blockquote { 
-            borderLeft: 4px solid #93c5fd; 
-            paddingLeft: 1.25rem; 
-            marginLeft: 0; 
-            marginBottom: 1.5rem; 
+            display: block;
+            border-left: 4px solid #93c5fd; 
+            padding-left: 1.25rem; 
+            margin-left: 0; 
+            margin-bottom: 1.5rem; 
             color: #9ca3af; 
-            fontStyle: italic;
+            font-style: italic;
         }
         .analysis hr { 
+            display: block;
             border: none; 
-            borderTop: 2px solid #404040; 
+            border-top: 2px solid #404040; 
             margin: 2.5rem 0;
         }
         .analysis a {
             color: #93c5fd;
-            textDecoration: underline;
+            text-decoration: underline;
         }
         .analysis a:hover {
             color: #bfdbfe;
