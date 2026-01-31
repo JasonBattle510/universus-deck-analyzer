@@ -8,50 +8,155 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f1f5f9; min-height: 100vh; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #f9fafb; min-height: 100vh; }
         .app { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-        .header { background: linear-gradient(135deg, #0e7490 0%, #1e40af 100%); border: 2px solid #06b6d4; borderRadius: 16px; padding: 2.5rem; marginBottom: 2rem; boxShadow: 0 10px 40px rgba(6, 182, 212, 0.3); }
-        .title { fontSize: 2.5rem; fontWeight: 700; marginBottom: 0.5rem; background: linear-gradient(135deg, #22d3ee, #ec4899); WebkitBackgroundClip: text; WebkitTextFillColor: transparent; }
-        .subtitle { color: #67e8f9; fontSize: 1.125rem; }
-        .status { color: #86efac; fontSize: 0.875rem; marginTop: 0.75rem; }
+        .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 1px solid #404040; borderRadius: 16px; padding: 2.5rem; marginBottom: 2rem; boxShadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+        .title { fontSize: 2.5rem; fontWeight: 700; marginBottom: 0.5rem; color: #ffffff; letterSpacing: -0.02em; }
+        .subtitle { color: #d1d5db; fontSize: 1.125rem; fontWeight: 500; }
+        .status { color: #93c5fd; fontSize: 0.875rem; marginTop: 0.75rem; fontWeight: 500; }
         .tabs { display: flex; gap: 0.75rem; marginBottom: 2rem; flexWrap: wrap; }
         .tab { padding: 0.875rem 1.75rem; borderRadius: 10px; fontWeight: 600; cursor: pointer; transition: all 0.2s; border: none; fontSize: 1rem; }
-        .tab-active { background: #06b6d4; color: #0f172a; boxShadow: 0 4px 12px rgba(6, 182, 212, 0.4); }
-        .tab-inactive { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
-        .card { background: #1e293b; border: 1px solid #334155; borderRadius: 12px; padding: 2rem; boxShadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
-        .btn { width: 100%; padding: 1rem; borderRadius: 10px; fontWeight: 700; fontSize: 1rem; cursor: pointer; border: none; transition: all 0.2s; marginTop: 0.75rem; }
-        .btn-primary { background: linear-gradient(135deg, #06b6d4, #3b82f6); color: #0f172a; }
-        .btn-secondary { background: #334155; color: #e2e8f0; }
-        .btn-success { background: #16a34a; color: white; }
+        .tab-active { background: #f9fafb; color: #0a0a0a; boxShadow: 0 4px 12px rgba(249, 250, 251, 0.3); }
+        .tab-inactive { background: #1a1a1a; color: #9ca3af; border: 1px solid #404040; }
+        .tab-inactive:hover { background: #2d2d2d; color: #d1d5db; }
+        .card { background: #1a1a1a; border: 1px solid #404040; borderRadius: 12px; padding: 2rem; boxShadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+        .btn { width: 100%; padding: 1rem; borderRadius: 10px; fontWeight: 600; fontSize: 1rem; cursor: pointer; border: none; transition: all 0.2s; marginTop: 0.75rem; }
+        .btn-primary { background: #f9fafb; color: #0a0a0a; }
+        .btn-primary:hover { background: #ffffff; transform: translateY(-1px); }
+        .btn-primary:disabled { background: #404040; color: #6b7280; cursor: not-allowed; }
+        .btn-secondary { background: #2d2d2d; color: #d1d5db; }
+        .btn-secondary:hover { background: #404040; }
+        .btn-success { background: #93c5fd; color: #0a0a0a; }
+        .btn-success:hover { background: #bfdbfe; }
         .alert { padding: 1rem; borderRadius: 8px; marginBottom: 1.5rem; borderLeft: 4px solid; }
-        .alert-warning { background: #78350f; borderColor: #f59e0b; color: #fbbf24; }
-        .alert-info { background: #1e3a8a; borderColor: #3b82f6; color: #93c5fd; }
-        .alert-success { background: #14532d; borderColor: #22c55e; color: #86efac; }
-        .progress-box { background: #1e293b; border: 1px solid #475569; borderRadius: 8px; padding: 1rem; marginBottom: 1rem; }
-        .progress-bar { width: 100%; height: 8px; background: #0f172a; borderRadius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #06b6d4, #3b82f6); transition: width 0.3s; }
-        .smart-box { background: #1e3a8a; border: 2px solid #3b82f6; borderRadius: 8px; padding: 1rem; marginBottom: 1.5rem; }
-        .input, .textarea { width: 100%; background: #0f172a; border: 1px solid #475569; borderRadius: 8px; padding: 0.875rem; color: #f1f5f9; fontSize: 0.95rem; }
+        .alert-warning { background: #1a1a1a; borderColor: #93c5fd; color: #dbeafe; }
+        .alert-info { background: #1a1a1a; borderColor: #93c5fd; color: #dbeafe; }
+        .alert-success { background: #1a1a1a; borderColor: #93c5fd; color: #dbeafe; }
+        .progress-box { background: #1a1a1a; border: 1px solid #404040; borderRadius: 8px; padding: 1rem; marginBottom: 1rem; }
+        .progress-bar { width: 100%; height: 8px; background: #0a0a0a; borderRadius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #93c5fd, #dbeafe); transition: width 0.3s; }
+        .smart-box { background: #1a1a1a; border: 2px solid #93c5fd; borderRadius: 8px; padding: 1rem; marginBottom: 1.5rem; }
+        .input, .textarea { width: 100%; background: #0a0a0a; border: 1px solid #404040; borderRadius: 8px; padding: 0.875rem; color: #f9fafb; fontSize: 0.95rem; }
+        .input:focus, .textarea:focus { outline: none; borderColor: #93c5fd; boxShadow: 0 0 0 3px rgba(147, 197, 253, 0.1); }
         .textarea { fontFamily: 'Courier New', monospace; resize: vertical; minHeight: 250px; }
-        .analysis { background: #0f172a; borderRadius: 12px; padding: 2rem; fontSize: 0.95rem; lineHeight: 1.7; color: #cbd5e1; }
-        .analysis h1 { color: #22d3ee; fontSize: 1.75rem; marginTop: 1.5rem; marginBottom: 1rem; fontWeight: 700; }
-        .analysis h2 { color: #ec4899; fontSize: 1.5rem; marginTop: 1.5rem; marginBottom: 1rem; fontWeight: 700; }
-        .analysis h3 { color: #a78bfa; fontSize: 1.25rem; marginTop: 1.25rem; marginBottom: 0.75rem; fontWeight: 600; }
-        .analysis p { marginBottom: 1rem; }
-        .analysis ul, .analysis ol { marginLeft: 1.5rem; marginBottom: 1rem; }
-        .analysis li { marginBottom: 0.5rem; lineHeight: 1.6; }
-        .analysis strong { color: #22d3ee; fontWeight: 600; }
-        .analysis code { background: #1e293b; padding: 0.2rem 0.4rem; borderRadius: 4px; fontFamily: 'Courier New', monospace; fontSize: 0.9rem; color: #86efac; }
-        .analysis pre { background: #1e293b; padding: 1rem; borderRadius: 8px; overflow: auto; marginBottom: 1rem; }
-        .analysis pre code { background: none; padding: 0; }
-        .analysis blockquote { borderLeft: 4px solid #06b6d4; paddingLeft: 1rem; marginLeft: 0; marginBottom: 1rem; color: #94a3b8; fontStyle: italic; }
-        .analysis hr { border: none; borderTop: 2px solid #334155; margin: 2rem 0; }
-        .spinner { border: 3px solid #475569; borderTopColor: transparent; borderRadius: 50%; width: 1.5rem; height: 1.5rem; animation: spin 0.8s linear infinite; display: inline-block; }
+        .spinner { border: 3px solid #404040; borderTopColor: transparent; borderRadius: 50%; width: 1.5rem; height: 1.5rem; animation: spin 0.8s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .api-key-section { background: #0f172a; border: 2px solid #3b82f6; borderRadius: 12px; padding: 1.5rem; marginBottom: 2rem; }
+        .api-key-section { background: #0a0a0a; border: 2px solid #93c5fd; borderRadius: 12px; padding: 1.5rem; marginBottom: 2rem; }
+        
+        /* Analysis Styling - Clean Monochrome */
+        .analysis { 
+            background: #0a0a0a; 
+            borderRadius: 12px; 
+            padding: 2.5rem; 
+            fontSize: 0.95rem; 
+            lineHeight: 1.8; 
+            color: #d1d5db;
+            fontWeight: 400;
+        }
+        .analysis h1 { 
+            color: #f9fafb; 
+            fontSize: 1.875rem; 
+            marginTop: 2rem; 
+            marginBottom: 1.25rem; 
+            fontWeight: 700;
+            letterSpacing: -0.025em;
+            borderBottom: 2px solid #404040;
+            paddingBottom: 0.75rem;
+        }
+        .analysis h1:first-child { marginTop: 0; }
+        .analysis h2 { 
+            color: #f9fafb; 
+            fontSize: 1.5rem; 
+            marginTop: 2rem; 
+            marginBottom: 1rem; 
+            fontWeight: 700;
+            letterSpacing: -0.02em;
+        }
+        .analysis h3 { 
+            color: #dbeafe; 
+            fontSize: 1.125rem; 
+            marginTop: 1.5rem; 
+            marginBottom: 0.75rem; 
+            fontWeight: 600;
+        }
+        .analysis h4 {
+            color: #93c5fd;
+            fontSize: 1rem;
+            marginTop: 1.25rem;
+            marginBottom: 0.5rem;
+            fontWeight: 600;
+        }
+        .analysis p { 
+            marginBottom: 1.25rem; 
+            lineHeight: 1.8;
+        }
+        .analysis ul, .analysis ol { 
+            marginLeft: 1.75rem; 
+            marginBottom: 1.25rem;
+            lineHeight: 1.8;
+        }
+        .analysis li { 
+            marginBottom: 0.75rem;
+            paddingLeft: 0.5rem;
+        }
+        .analysis ul ul, .analysis ol ol {
+            marginTop: 0.5rem;
+            marginBottom: 0.5rem;
+        }
+        .analysis strong, .analysis b { 
+            color: #f9fafb; 
+            fontWeight: 600;
+        }
+        .analysis em, .analysis i {
+            color: #dbeafe;
+            fontStyle: italic;
+        }
+        .analysis code { 
+            background: #1a1a1a; 
+            padding: 0.25rem 0.5rem; 
+            borderRadius: 4px; 
+            fontFamily: 'Courier New', monospace; 
+            fontSize: 0.875rem; 
+            color: #93c5fd;
+            border: 1px solid #404040;
+        }
+        .analysis pre { 
+            background: #1a1a1a; 
+            padding: 1.25rem; 
+            borderRadius: 8px; 
+            overflow: auto; 
+            marginBottom: 1.5rem;
+            border: 1px solid #404040;
+        }
+        .analysis pre code { 
+            background: none; 
+            padding: 0;
+            border: none;
+            color: #dbeafe;
+        }
+        .analysis blockquote { 
+            borderLeft: 4px solid #93c5fd; 
+            paddingLeft: 1.25rem; 
+            marginLeft: 0; 
+            marginBottom: 1.5rem; 
+            color: #9ca3af; 
+            fontStyle: italic;
+        }
+        .analysis hr { 
+            border: none; 
+            borderTop: 2px solid #404040; 
+            margin: 2.5rem 0;
+        }
+        .analysis a {
+            color: #93c5fd;
+            textDecoration: underline;
+        }
+        .analysis a:hover {
+            color: #bfdbfe;
+        }
     </style>
 </head>
 <body>
@@ -60,9 +165,15 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         const GITHUB_BASE = 'https://cdn.jsdelivr.net/gh/JasonBattle510/universus-deck-analyzer@main/UVS_Dataset-main';
-        
-        // UPDATE THIS to your worker URL
         const WORKER_URL = 'https://red-dew-4e75.slothcedric.workers.dev';
+        
+        // Configure marked.js for better rendering
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false
+        });
         
         function App() {
             const [activeTab, setActiveTab] = useState('analyze');
@@ -116,7 +227,7 @@
             const saveApiKey = () => {
                 localStorage.setItem('anthropic-api-key', apiKeyInput);
                 setApiKey(apiKeyInput);
-                alert('API key saved! You can now use AI analysis.');
+                alert('API key saved!');
             };
             
             const clearApiKey = () => {
@@ -323,7 +434,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                     
                     {activeTab === 'analyze' && (
                         <div className="card">
-                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1.5rem'}}>Analyze Deck</h2>
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1.5rem'}}>Analyze Deck</h2>
                             {!apiKey && (
                                 <div className="alert alert-info">
                                     💡 Add your Anthropic API key in Settings to enable AI analysis!
@@ -334,22 +445,22 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                             {error && <div className="alert alert-warning">{error}</div>}
                             {isDetecting && detectProgress.total > 0 && (
                                 <div className="progress-box">
-                                    <div style={{color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '0.5rem'}}>Scanning... {detectProgress.current}/{detectProgress.total}</div>
+                                    <div style={{color: '#d1d5db', fontSize: '0.875rem', marginBottom: '0.5rem'}}>Scanning... {detectProgress.current}/{detectProgress.total}</div>
                                     <div className="progress-bar"><div className="progress-fill" style={{width: `${(detectProgress.current / detectProgress.total) * 100}%`}}></div></div>
                                 </div>
                             )}
                             {suggestedSets.length > 0 && !isDetecting && (
                                 <div className="smart-box">
-                                    <div style={{color: '#93c5fd', fontWeight: 600, marginBottom: '0.5rem'}}>🎯 Found {suggestedSets.length} sets needed</div>
-                                    <div style={{color: '#dbeafe', fontSize: '0.875rem'}}>{suggestedSets.map(id => availableSets.find(s => s.id === id)?.name || id).join(', ')}</div>
+                                    <div style={{color: '#dbeafe', fontWeight: 600, marginBottom: '0.5rem'}}>🎯 Found {suggestedSets.length} sets needed</div>
+                                    <div style={{color: '#93c5fd', fontSize: '0.875rem'}}>{suggestedSets.map(id => availableSets.find(s => s.id === id)?.name || id).join(', ')}</div>
                                 </div>
                             )}
                             <div style={{marginBottom: '1.5rem'}}>
-                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem'}}>Deck Name</label>
+                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', color: '#d1d5db'}}>Deck Name</label>
                                 <input className="input" value={deckName} onChange={e => setDeckName(e.target.value)} placeholder="My Deck" />
                             </div>
                             <div style={{marginBottom: '1.5rem'}}>
-                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem'}}>Deck List</label>
+                                <label style={{display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', color: '#d1d5db'}}>Deck List</label>
                                 <textarea className="textarea" value={deckInput} onChange={e => setDeckInput(e.target.value)} placeholder="1 Character&#10;4 Card Name..." />
                             </div>
                             <button className="btn btn-secondary" onClick={detectNeededSets} disabled={isDetecting || !deckInput.trim()}>
@@ -368,19 +479,19 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                     
                     {activeTab === 'library' && (
                         <div className="card">
-                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1.5rem'}}>Library</h2>
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1.5rem'}}>Library</h2>
                             {decks.length === 0 ? (
-                                <div style={{textAlign: 'center', padding: '4rem', color: '#64748b'}}>No decks yet!</div>
+                                <div style={{textAlign: 'center', padding: '4rem', color: '#6b7280'}}>No decks yet!</div>
                             ) : (
                                 <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
                                     {decks.map(deck => (
-                                        <div key={deck.id} onClick={() => { setSelectedDeck(deck); setActiveTab('view'); }} style={{background: '#0f172a', border: '2px solid #334155', borderRadius: '10px', padding: '1.25rem', cursor: 'pointer'}}>
+                                        <div key={deck.id} onClick={() => { setSelectedDeck(deck); setActiveTab('view'); }} style={{background: '#0a0a0a', border: '1px solid #404040', borderRadius: '10px', padding: '1.25rem', cursor: 'pointer', transition: 'all 0.2s'}}>
                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                                 <div>
-                                                    <h3 style={{fontSize: '1.375rem', fontWeight: 700, color: '#22d3ee'}}>{deck.name}</h3>
-                                                    <p style={{color: '#64748b', fontSize: '0.75rem'}}>{new Date(deck.createdAt).toLocaleDateString()}</p>
+                                                    <h3 style={{fontSize: '1.375rem', fontWeight: 700, color: '#f9fafb'}}>{deck.name}</h3>
+                                                    <p style={{color: '#6b7280', fontSize: '0.75rem'}}>{new Date(deck.createdAt).toLocaleDateString()}</p>
                                                 </div>
-                                                <button onClick={e => { e.stopPropagation(); if(confirm('Delete?')) { setDecks(decks.filter(d => d.id !== deck.id)); setSelectedDeck(null); }}} style={{padding: '0.625rem 1.25rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>Delete</button>
+                                                <button onClick={e => { e.stopPropagation(); if(confirm('Delete?')) { setDecks(decks.filter(d => d.id !== deck.id)); setSelectedDeck(null); }}} style={{padding: '0.625rem 1.25rem', background: '#404040', color: '#f9fafb', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>Delete</button>
                                             </div>
                                         </div>
                                     ))}
@@ -392,15 +503,15 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                     {activeTab === 'view' && selectedDeck && (
                         <div className="card">
                             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem'}}>
-                                <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee'}}>{selectedDeck.name}</h2>
-                                <button onClick={() => setActiveTab('library')} style={{padding: '0.625rem 1.25rem', background: '#334155', color: '#e2e8f0', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>← Back</button>
+                                <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb'}}>{selectedDeck.name}</h2>
+                                <button onClick={() => setActiveTab('library')} style={{padding: '0.625rem 1.25rem', background: '#2d2d2d', color: '#d1d5db', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>← Back</button>
                             </div>
                             <div style={{marginBottom: '2rem'}}>
-                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#ec4899', marginBottom: '1rem'}}>Deck List</h3>
-                                <pre style={{background: '#0f172a', borderRadius: '8px', padding: '1.5rem', fontFamily: 'monospace', fontSize: '0.875rem', whiteSpace: 'pre-wrap', color: '#cbd5e1'}}>{selectedDeck.deckList}</pre>
+                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>Deck List</h3>
+                                <pre style={{background: '#0a0a0a', borderRadius: '8px', padding: '1.5rem', fontFamily: 'monospace', fontSize: '0.875rem', whiteSpace: 'pre-wrap', color: '#d1d5db', border: '1px solid #404040'}}>{selectedDeck.deckList}</pre>
                             </div>
                             <div>
-                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#ec4899', marginBottom: '1rem'}}>🤖 AI Strategic Analysis</h3>
+                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>🤖 AI Strategic Analysis</h3>
                                 <div className="analysis" dangerouslySetInnerHTML={{ __html: marked.parse(selectedDeck.analysis) }} />
                             </div>
                         </div>
@@ -408,21 +519,21 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                     
                     {activeTab === 'settings' && (
                         <div className="card">
-                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1.5rem'}}>Settings</h2>
+                            <h2 style={{fontSize: '1.75rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1.5rem'}}>Settings</h2>
                             
                             <div className="api-key-section">
-                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1rem'}}>🤖 AI Setup</h3>
-                                <p style={{color: '#cbd5e1', marginBottom: '1rem', lineHeight: 1.6}}>
-                                    Add your Anthropic API key for AI strategic analysis. Your key stays in your browser.
+                                <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>🤖 AI Setup</h3>
+                                <p style={{color: '#d1d5db', marginBottom: '1rem', lineHeight: 1.6}}>
+                                    Add your Anthropic API key for AI strategic analysis.
                                 </p>
                                 <p style={{color: '#93c5fd', marginBottom: '1rem', fontSize: '0.875rem'}}>
-                                    Get API key: <a href="https://console.anthropic.com/" target="_blank" style={{color: '#22d3ee', textDecoration: 'underline'}}>console.anthropic.com</a>
+                                    Get API key: <a href="https://console.anthropic.com/" target="_blank" style={{color: '#dbeafe', textDecoration: 'underline'}}>console.anthropic.com</a>
                                     <br/>Cost: ~$0.03-0.05 per analysis
                                 </p>
                                 {apiKey ? (
                                     <div className="alert alert-success">
                                         ✅ API Key configured!
-                                        <button onClick={clearApiKey} style={{marginTop: '0.75rem', padding: '0.5rem 1rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'block'}}>
+                                        <button onClick={clearApiKey} style={{marginTop: '0.75rem', padding: '0.5rem 1rem', background: '#404040', color: '#f9fafb', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'block'}}>
                                             Remove Key
                                         </button>
                                     </div>
@@ -434,14 +545,14 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                                 )}
                             </div>
                             
-                            <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#22d3ee', marginBottom: '1rem'}}>📦 Card Sets</h3>
-                            <p style={{marginBottom: '1rem', color: '#cbd5e1'}}>{availableSets.length} sets available</p>
-                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem', maxHeight: '400px', overflow: 'auto', padding: '0.5rem', background: '#0f172a', borderRadius: '8px', marginBottom: '1.5rem'}}>
+                            <h3 style={{fontSize: '1.25rem', fontWeight: 700, color: '#f9fafb', marginBottom: '1rem'}}>📦 Card Sets</h3>
+                            <p style={{marginBottom: '1rem', color: '#d1d5db'}}>{availableSets.length} sets available</p>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem', maxHeight: '400px', overflow: 'auto', padding: '0.5rem', background: '#0a0a0a', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #404040'}}>
                                 {availableSets.map(set => (
-                                    <label key={set.id} style={{display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: '#1e293b', border: '1px solid #334155', borderRadius: '6px', cursor: 'pointer'}}>
+                                    <label key={set.id} style={{display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: '#1a1a1a', border: '1px solid #404040', borderRadius: '6px', cursor: 'pointer'}}>
                                         <input type="checkbox" checked={selectedSets.includes(set.id)} onChange={e => setSelectedSets(e.target.checked ? [...selectedSets, set.id] : selectedSets.filter(id => id !== set.id))} style={{width: '1.125rem', height: '1.125rem'}} />
-                                        <span style={{fontSize: '0.875rem', fontWeight: 600}}>{set.name || set.id}</span>
-                                        {loadedSets.includes(set.id) && <span style={{color: '#22c55e', fontSize: '0.75rem', marginLeft: 'auto'}}>✓</span>}
+                                        <span style={{fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db'}}>{set.name || set.id}</span>
+                                        {loadedSets.includes(set.id) && <span style={{color: '#93c5fd', fontSize: '0.75rem', marginLeft: 'auto'}}>✓</span>}
                                     </label>
                                 ))}
                             </div>
