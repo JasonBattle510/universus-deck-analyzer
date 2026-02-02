@@ -412,22 +412,27 @@ ${charDetails}
 FULL DECK LIST:
 ${cardDetails}
 
+CRITICAL: Assume the opponent starts at 31 vitality (standard). When explaining damage, show how the deck reaches 31+ total damage to win. Use simple math like "Card A does 5 damage + Card B does 8 damage = 13 total."
+
 Provide analysis using SIMPLE LANGUAGE with inline explanations and these exact sections (use ## for headers):
 
 ## Overview
-Explain what this deck does in 2-3 sentences. What's the main strategy? Is it aggressive, defensive, or something else?
+Explain what this deck does in 3-4 sentences. What's the main strategy? Is it aggressive (wins fast), defensive (wins late), or something else? How does it win?
 
 ## Win Condition
-How does this deck win? Explain the damage route simply. When you mention a game term (like "Blitz", "Enhance", "Control Check"), add a brief inline definition in parentheses. Use actual card names and show the math (e.g., "Card A does 5 damage, Card B does 3 damage = 8 total").
+How does this deck win? Explain the damage route simply. Show the math of how you get to 31 damage (the opponent's starting health):
+- Example: "Turns 3-4: Play Card A four times (5 damage each) = 20 damage. Turn 5: Play Card B (8 damage) = 28 total. Turn 6: Play Card C (5 damage) = 33 total. You win!"
+
+When you mention a game term (like "Blitz", "Enhance", "Control Check", "Foundation", "Momentum"), add a brief inline definition in parentheses. Use actual card names and show the math.
 
 ## Key Cards
 List the 5 most important cards and explain WHY they're important in simple terms. Define any game terms inline.
 
 ## How to Play (Turn-by-Turn)
 Break down the first 5 turns step-by-step. Define game terms inline as you use them:
-- **Turns 1-2:** What to do (be specific)
-- **Turns 3-4:** What to do (be specific)  
-- **Turn 5+:** How to finish the game
+- **Turns 1-2:** What to do (be specific - which cards to play)
+- **Turns 3-4:** What to do (be specific - how to start dealing damage)
+- **Turn 5+:** How to finish the game and reach 31 damage
 
 ## Common Mistakes
 What do new players often do wrong with this deck? Give 3-4 specific mistakes to avoid.
@@ -435,7 +440,7 @@ What do new players often do wrong with this deck? Give 3-4 specific mistakes to
 ## Tips for Success
 3-4 helpful tips for playing this deck well.
 
-IMPORTANT: When you use game terms like "Blitz", "Enhance", "Foundation", "Control Check", "Momentum", etc., add a brief inline explanation in parentheses right after. For example: "Use the Blitz ability (which triggers automatically when you play the card) to ready 2 foundations (cards that provide resources)."
+IMPORTANT: When you use game terms like "Blitz", "Enhance", "Foundation", "Control Check", "Momentum", "Card Pool", etc., add a brief inline explanation in parentheses right after. For example: "Use the Blitz ability (which triggers automatically when you play the card) to ready 2 foundations (cards that provide resources)."
 
 Use simple language. Be encouraging and helpful!`
                         : `You are an expert Universus TCG deck analyst. Analyze this deck and provide a DETAILED strategic breakdown.
@@ -445,27 +450,43 @@ ${charDetails}
 FULL DECK LIST:
 ${cardDetails}
 
+CRITICAL: Assume the opponent starts at 31 vitality (standard). All damage calculations must show how the deck reaches 31+ total damage. Break down damage by turn ranges and show the math.
+
 Provide comprehensive analysis with these exact sections (use ## for headers):
 
+## Overview
+Write a strategic overview (120-150 words) covering:
+- Deck archetype (aggro/midrange/control/combo)
+- Core game plan and how it wins
+- Game phases broken down by turns (e.g., turns 1-2: setup, turns 3-4: pressure, turns 5-6: finish)
+- Damage path to 31 vitality with specific numbers
+- Expected win turn range
+- Matchup positioning (strong vs / weak vs)
+
 ## Win Condition
-How does this deck win? Primary kill routes with exact damage calculations.
+Explain the primary kill route with EXACT damage calculations that total 31+ vitality. Break down by turn ranges:
+- Turns X-Y: [cards] = Z damage
+- Turns A-B: [cards] = C damage
+- Total: 31+ damage for the win
+
+Include secondary win conditions if applicable.
 
 ## Key Combos
-Important card interactions and synergies (be specific with card names).
+Important card interactions and synergies. Be specific with card names and exact sequencing.
 
 ## Gameplay Strategy
-Turn-by-turn gameplay and ideal sequences.
+Turn-by-turn gameplay and ideal sequences. What does this deck do each turn to reach the win condition?
 
 ## Core Engine
-Essential cards and how they work together.
+Essential cards and how they work together. What cards must be in play for the deck to function?
 
 ## Strengths
-What this deck does well.
+What this deck does well. Why would you play this deck?
 
 ## Weaknesses
-Vulnerabilities and difficult matchups.
+Vulnerabilities and difficult matchups. What beats this deck?
 
-Be specific with card names, exact numbers, damage calculations, and gameplay sequences.`;
+Be specific with card names, exact numbers, damage calculations to 31 vitality, and gameplay sequences.`;
 
                     const response = await fetch(WORKER_URL, {
                         method: 'POST',
@@ -545,18 +566,7 @@ Be specific with card names, exact numbers, damage calculations, and gameplay se
                 
                 if (currentSection.content.trim()) sections.push(currentSection);
                 
-                if (!beginnerMode && sections.length > 0 && sections[0].title === 'Overview') {
-                    const bullets = [];
-                    sections.forEach(section => {
-                        const firstPara = section.content.split('\n\n')[0];
-                        if (firstPara && firstPara.length < 200) bullets.push(firstPara.replace(/^[•\-\*]\s*/, '').trim());
-                    });
-                    
-                    const tldr = `<div class="tldr-box"><div class="tldr-title">📋 TL;DR</div><ul>${bullets.slice(0, 4).map(b => `<li>${b}</li>`).join('')}</ul></div>`;
-                    sections[0].content = tldr + sections[0].content;
-                }
-                
-                // Add Glossary tab for beginner mode
+                // Add Glossary tab for beginner mode only
                 if (beginnerMode) {
                     sections.push({
                         title: '📖 Glossary',
