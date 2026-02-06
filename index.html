@@ -1392,16 +1392,17 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                             // Don't show characters in card browser
                             if (card.Cardtype === 'Character') return false;
                             
-                            // Apply symbol tab filter
+                            // Apply symbol tab filter (if specific symbol selected)
                             if (builderFilters.activeSymbolTab !== 'all') {
                                 const cardSymbols = (card.Symbols || []).map(s => s.toLowerCase());
+                                // Check if card has the selected symbol
                                 if (!cardSymbols.includes(builderFilters.activeSymbolTab)) {
                                     return false;
                                 }
                             }
                             
-                            // Apply symbol filtering (unless "show all" is enabled or browsing tabs)
-                            if (!builderFilters.showAllSymbols && builderDeck.character && builderFilters.activeSymbolTab === 'all') {
+                            // Apply character-based symbol filtering (only when character is selected and on "all" tab)
+                            if (builderDeck.character && builderFilters.activeSymbolTab === 'all' && !builderFilters.showAllSymbols) {
                                 const cardSymbols = card.Symbols || [];
                                 
                                 // Allow universal cards (with "all" symbol)
@@ -1606,9 +1607,30 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                         
                                         <div style={{fontSize: '0.85rem', opacity: 0.8, marginBottom: '0.75rem'}}>
                                             {filteredCards.length} cards
+                                            {builderDeck.character && builderFilters.activeSymbolTab === 'all' && !builderFilters.showAllSymbols && (
+                                                <span> (filtered for {characterSymbols.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('/')})</span>
+                                            )}
+                                            {builderFilters.activeSymbolTab !== 'all' && (
+                                                <span> (showing {builderFilters.activeSymbolTab})</span>
+                                            )}
                                         </div>
                                         
                                         <div className="card-browser">
+                                            {filteredCards.length === 0 && allCards.length > 0 && (
+                                                <div style={{textAlign: 'center', padding: '2rem', opacity: 0.6}}>
+                                                    <div style={{marginBottom: '1rem'}}>No cards match your filters</div>
+                                                    <div style={{fontSize: '0.8rem'}}>
+                                                        Try:
+                                                        <ul style={{textAlign: 'left', maxWidth: '250px', margin: '0.5rem auto'}}>
+                                                            {builderFilters.activeSymbolTab !== 'all' && <li>Click "All" tab to see all symbols</li>}
+                                                            {builderDeck.character && !builderFilters.showAllSymbols && <li>Check "Show all symbols" to browse other symbols</li>}
+                                                            {builderFilters.types.length < 3 && <li>Enable all card types (Attack/Foundation/Action)</li>}
+                                                            {builderSearch && <li>Clear search box</li>}
+                                                            {(builderFilters.diffMin > 0 || builderFilters.diffMax < 10) && <li>Adjust difficulty sliders (currently {builderFilters.diffMin}-{builderFilters.diffMax})</li>}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            )}
                                             {filteredCards.slice(0, 100).map(card => {
                                                 const cardSymbols = card.Symbols || [];
                                                 const symbolDisplay = cardSymbols.length > 0 
