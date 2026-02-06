@@ -201,6 +201,8 @@
         .char-selector { margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; }
         .char-selector-label { font-weight: 600; margin-bottom: 0.5rem; display: block; }
         .range-slider { width: 100%; }
+        .template-card { cursor: pointer; transition: all 0.2s; }
+        .template-card:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body class="dark">
@@ -212,6 +214,365 @@
         const WORKER_URL = 'https://red-dew-4e75.slothcedric.workers.dev';
         
         marked.setOptions({ breaks: true, gfm: true, headerIds: false, mangle: false });
+        
+        // Symbol Information Database
+        const SYMBOL_INFO = {
+            "air": {
+                name: "Air",
+                emoji: "💨",
+                playstyle: "Fast Aggro",
+                description: "Focuses on flash attacks, card pool clearing, and readying foundations. Ideal for fast, aggressive strategies.",
+                mechanics: [
+                    "Flash attacks (play during opponent's turn)",
+                    "Card pool clearing",
+                    "Foundation readying",
+                    "Speed-based pressure"
+                ],
+                strengths: [
+                    "Fast, unpredictable offense",
+                    "Resource recycling",
+                    "Difficult to defend against"
+                ],
+                weaknesses: [
+                    "Vulnerable to defensive setups",
+                    "Requires careful timing"
+                ],
+                recommendedFor: "Players who like aggressive, reactive gameplay",
+                archetypes: ["Aggro", "Tempo", "Flash"]
+            },
+            "all": {
+                name: "All",
+                emoji: "🌟",
+                playstyle: "Versatile Toolbox",
+                description: "A toolbox symbol emphasizing card draw and topdeck manipulation. Offers versatile, mid-range utility.",
+                mechanics: [
+                    "Card draw engines",
+                    "Topdeck manipulation",
+                    "Flexible responses",
+                    "Utility effects"
+                ],
+                strengths: [
+                    "Adaptable to any matchup",
+                    "Consistent card quality",
+                    "Strong mid-game"
+                ],
+                weaknesses: [
+                    "Lacks specialized tools",
+                    "Can be unfocused"
+                ],
+                recommendedFor: "Players who want flexibility and consistency",
+                archetypes: ["Midrange", "Toolbox", "Goodstuff"]
+            },
+            "chaos": {
+                name: "Chaos",
+                emoji: "🎲",
+                playstyle: "High-Risk Explosive",
+                description: "Centers on momentum generation and positive check manipulation, enabling explosive, high-risk plays.",
+                mechanics: [
+                    "Momentum generation",
+                    "Positive check manipulation",
+                    "Resource acceleration",
+                    "Explosive turns"
+                ],
+                strengths: [
+                    "Massive damage potential",
+                    "Momentum advantage",
+                    "Game-ending turns"
+                ],
+                weaknesses: [
+                    "High variance",
+                    "Vulnerable when behind",
+                    "Risk-reward balance"
+                ],
+                recommendedFor: "Players who embrace variance and big plays",
+                archetypes: ["Combo", "Momentum", "All-In"]
+            },
+            "death": {
+                name: "Death",
+                emoji: "💀",
+                playstyle: "Resource Denial Control",
+                description: "A control symbol that destroys opponent foundations and burns health, excelling in resource denial.",
+                mechanics: [
+                    "Foundation destruction",
+                    "Direct damage/burn",
+                    "Resource denial",
+                    "Attrition warfare"
+                ],
+                strengths: [
+                    "Cripples opponent resources",
+                    "Multiple win conditions",
+                    "Strong late game"
+                ],
+                weaknesses: [
+                    "Slow to establish",
+                    "Vulnerable to aggro",
+                    "Requires setup time"
+                ],
+                recommendedFor: "Control players who like denying resources",
+                archetypes: ["Control", "Burn", "Attrition"]
+            },
+            "earth": {
+                name: "Earth",
+                emoji: "🌍",
+                playstyle: "Big Damage Finisher",
+                description: "Specializes in large damage manipulation and foundation flipping, often leading to game-ending attacks.",
+                mechanics: [
+                    "Damage amplification",
+                    "Foundation flipping",
+                    "High-power attacks",
+                    "Finisher focus"
+                ],
+                strengths: [
+                    "Massive single attacks",
+                    "Game-ending potential",
+                    "Strong finishers"
+                ],
+                weaknesses: [
+                    "Slow setup",
+                    "Telegraphed strategy",
+                    "Vulnerable early"
+                ],
+                recommendedFor: "Players who love big, impactful turns",
+                archetypes: ["Ramp", "Big Damage", "Finisher"]
+            },
+            "evil": {
+                name: "Evil",
+                emoji: "😈",
+                playstyle: "Cost-Based Power",
+                description: "Requires costs (like health or discards) for power, enabling negative check manipulation and restrictive effects.",
+                mechanics: [
+                    "Pay life/discard for effects",
+                    "Negative check manipulation",
+                    "Restrictive effects",
+                    "Powerful payoffs"
+                ],
+                strengths: [
+                    "Powerful effects",
+                    "Opponent disruption",
+                    "Resource conversion"
+                ],
+                weaknesses: [
+                    "Self-damaging",
+                    "Risk of overextension",
+                    "Requires careful management"
+                ],
+                recommendedFor: "Players willing to pay costs for power",
+                archetypes: ["Aggressive Control", "Risk-Reward", "Disruption"]
+            },
+            "fire": {
+                name: "Fire",
+                emoji: "🔥",
+                playstyle: "Premier Aggro",
+                description: "The premier aggressive symbol, using self-mill and stat pumps to burst through opponents quickly.",
+                mechanics: [
+                    "Self-mill acceleration",
+                    "Stat pumps (+damage/speed)",
+                    "Fast damage output",
+                    "Aggressive curve"
+                ],
+                strengths: [
+                    "Fastest clock in game",
+                    "High pressure",
+                    "Punishes slow decks"
+                ],
+                weaknesses: [
+                    "Runs out of gas",
+                    "Vulnerable to blocks",
+                    "Weak late game"
+                ],
+                recommendedFor: "Aggressive players who want fast wins",
+                archetypes: ["Aggro", "Rush", "Burn"]
+            },
+            "good": {
+                name: "Good",
+                emoji: "✨",
+                playstyle: "Defensive Wall",
+                description: "Highly defensive, focused on quick foundation building and block modifiers, excelling in mid-game walling.",
+                mechanics: [
+                    "Fast foundation building",
+                    "High block modifiers",
+                    "Defensive positioning",
+                    "Mid-game strength"
+                ],
+                strengths: [
+                    "Superior blocking",
+                    "Resource advantage",
+                    "Survives aggro"
+                ],
+                weaknesses: [
+                    "Slow win condition",
+                    "Can struggle to close",
+                    "Vulnerable to control"
+                ],
+                recommendedFor: "Defensive players who like outlasting opponents",
+                archetypes: ["Defense", "Midrange", "Wall"]
+            },
+            "life": {
+                name: "Life",
+                emoji: "❤️",
+                playstyle: "Mid-Range Grower",
+                description: "A mid-range symbol that gains health and manipulates progressive difficulty, building toward impactful turns.",
+                mechanics: [
+                    "Health gain",
+                    "Progressive difficulty manipulation",
+                    "Board building",
+                    "Scaling threats"
+                ],
+                strengths: [
+                    "Life buffer vs aggro",
+                    "Grows over time",
+                    "Strong turns 5-7"
+                ],
+                weaknesses: [
+                    "Vulnerable early",
+                    "Requires setup",
+                    "Can be too slow"
+                ],
+                recommendedFor: "Midrange players who like building advantages",
+                archetypes: ["Midrange", "Life Gain", "Progressive"]
+            },
+            "order": {
+                name: "Order",
+                emoji: "⚖️",
+                playstyle: "Lock Control",
+                description: "A control symbol that commits opponent resources and freezes cards in place, disrupting plans.",
+                mechanics: [
+                    "Commit opponent cards",
+                    "Freeze effects",
+                    "Resource lock",
+                    "Tempo disruption"
+                ],
+                strengths: [
+                    "Locks opponent out",
+                    "Disrupts game plans",
+                    "Strong control tools"
+                ],
+                weaknesses: [
+                    "Slow to establish",
+                    "Vulnerable to aggro",
+                    "Requires precision"
+                ],
+                recommendedFor: "Control players who like lockout strategies",
+                archetypes: ["Control", "Lock", "Prison"]
+            },
+            "void": {
+                name: "Void",
+                emoji: "🌌",
+                playstyle: "Proactive Control",
+                description: "A proactive control symbol that discards opponent hands and negates abilities, shutting down threats.",
+                mechanics: [
+                    "Hand disruption",
+                    "Ability negation",
+                    "Proactive control",
+                    "Threat shutdown"
+                ],
+                strengths: [
+                    "Shuts down combos",
+                    "Hand control",
+                    "Preemptive disruption"
+                ],
+                weaknesses: [
+                    "Timing-dependent",
+                    "Can struggle vs aggro",
+                    "Requires knowledge"
+                ],
+                recommendedFor: "Control players who like disrupting strategies",
+                archetypes: ["Discard", "Control", "Disruption"]
+            },
+            "water": {
+                name: "Water",
+                emoji: "💧",
+                playstyle: "Defensive Adaptation",
+                description: "A defensive symbol that clogs card pools and refreshes the block zone, adaptable for both defense and setup.",
+                mechanics: [
+                    "Card pool clogging",
+                    "Block zone refresh",
+                    "Defensive tools",
+                    "Setup enablers"
+                ],
+                strengths: [
+                    "Defensive versatility",
+                    "Slows opponent",
+                    "Adaptable strategy"
+                ],
+                weaknesses: [
+                    "Lacks explosive power",
+                    "Can be reactive",
+                    "Moderate clock"
+                ],
+                recommendedFor: "Players who like flexible, defensive gameplay",
+                archetypes: ["Control", "Tempo", "Defensive"]
+            },
+            "infinity": {
+                name: "Universal",
+                emoji: "∞",
+                playstyle: "Universal Neutral",
+                description: "Neutral symbol cards that can be included in any deck, providing flexible utility options.",
+                mechanics: [
+                    "Universal playability",
+                    "Flexible effects",
+                    "Staple cards"
+                ],
+                strengths: [
+                    "Works in any deck",
+                    "Versatile options"
+                ],
+                weaknesses: [
+                    "Often less powerful",
+                    "Generic effects"
+                ],
+                recommendedFor: "All players as deck staples",
+                archetypes: ["Any"]
+            }
+        };
+        
+        // Deck Templates (Starter decks for each symbol)
+        const DECK_TEMPLATES = {
+            "fire_aggro": {
+                name: "Fire Rush (Starter)",
+                symbol: "fire",
+                description: "Fast, aggressive Fire deck focused on dealing 31 damage by turn 4-5.",
+                cardList: [
+                    // This is a template structure - actual cards depend on loaded sets
+                    { name: "Character", type: "Character", symbol: "fire", count: 1 },
+                    { name: "Foundation", type: "Foundation", symbol: "fire", count: 25 },
+                    { name: "Low Cost Attack", type: "Attack", difficulty: 2, count: 8 },
+                    { name: "Medium Attack", type: "Attack", difficulty: 4, count: 12 },
+                    { name: "Finisher", type: "Attack", difficulty: 6, count: 4 }
+                ],
+                strategy: "Play aggressively from turn 2. Maximize damage output. Win by turn 5."
+            },
+            "water_control": {
+                name: "Water Defense (Starter)",
+                symbol: "water",
+                description: "Defensive Water deck that survives early aggression and wins late.",
+                strategy: "Block aggressively turns 2-4. Stabilize turn 5. Win turns 6-8."
+            },
+            "air_tempo": {
+                name: "Air Flash (Starter)", 
+                symbol: "air",
+                description: "Fast Air deck using flash attacks and foundation manipulation.",
+                strategy: "Use flash attacks for surprise pressure. Ready foundations for multiple threats."
+            },
+            "earth_ramp": {
+                name: "Earth Big Damage (Starter)",
+                symbol: "earth",
+                description: "Ramp into massive damage attacks that end the game in one hit.",
+                strategy: "Build foundations turns 1-4. Drop huge attacks turns 5-6."
+            },
+            "death_control": {
+                name: "Death Denial (Starter)",
+                symbol: "death",
+                description: "Control deck that destroys opponent resources and burns life total.",
+                strategy: "Destroy foundations early. Burn + control to win late."
+            },
+            "chaos_momentum": {
+                name: "Chaos Explosive (Starter)",
+                symbol: "chaos",
+                description: "High-variance deck that generates momentum for explosive turns.",
+                strategy: "Build momentum. Execute game-ending turn 5-6."
+            }
+        };
         
         // Glossary Database
         const GLOSSARY = {
@@ -287,7 +648,8 @@
                 types: ['Attack', 'Foundation', 'Action'],
                 diffMin: 0,
                 diffMax: 10,
-                showAllSymbols: false
+                showAllSymbols: false,
+                activeSymbolTab: 'all'
             });
             
             useEffect(() => {
@@ -776,6 +1138,135 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                 alert('Card structure logged to console! Press F12 to view.\n\nLook for fields like: Symbol, Resource, Element, Faction, etc.');
             };
             
+            const calculateDeckStats = () => {
+                const totalCards = builderDeck.cards.reduce((s, c) => s + c.count, 0) + (builderDeck.character ? 1 : 0);
+                const foundations = builderDeck.cards.filter(c => c.card.Cardtype === 'Foundation');
+                const attacks = builderDeck.cards.filter(c => c.card.Cardtype === 'Attack');
+                const actions = builderDeck.cards.filter(c => c.card.Cardtype === 'Action');
+                
+                const foundationCount = foundations.reduce((s, c) => s + c.count, 0);
+                const attackCount = attacks.reduce((s, c) => s + c.count, 0);
+                const actionCount = actions.reduce((s, c) => s + c.count, 0);
+                
+                // Calculate difficulty distribution
+                const distribution = { '0-2': 0, '3-4': 0, '5-6': 0, '7-8': 0, '9+': 0 };
+                builderDeck.cards.forEach(entry => {
+                    const diff = entry.card.Difficulty || 0;
+                    const count = entry.count;
+                    if (diff <= 2) distribution['0-2'] += count;
+                    else if (diff <= 4) distribution['3-4'] += count;
+                    else if (diff <= 6) distribution['5-6'] += count;
+                    else if (diff <= 8) distribution['7-8'] += count;
+                    else distribution['9+'] += count;
+                });
+                
+                // Calculate average difficulty (non-foundations)
+                const nonFoundations = [...attacks, ...actions];
+                const totalDiff = nonFoundations.reduce((sum, entry) => {
+                    return sum + (entry.card.Difficulty || 0) * entry.count;
+                }, 0);
+                const avgDiff = nonFoundations.length > 0 ? (totalDiff / (attackCount + actionCount)).toFixed(1) : 0;
+                
+                // Determine curve speed
+                let curveSpeed = 'MIDRANGE';
+                if (distribution['0-2'] + distribution['3-4'] > (totalCards - foundationCount) * 0.7) {
+                    curveSpeed = 'AGGRO';
+                } else if (distribution['7-8'] + distribution['9+'] > (totalCards - foundationCount) * 0.4) {
+                    curveSpeed = 'CONTROL';
+                }
+                
+                // Symbol distribution
+                const symbolCounts = {};
+                builderDeck.cards.forEach(entry => {
+                    const symbols = entry.card.Symbols || [];
+                    symbols.forEach(sym => {
+                        const key = sym.toLowerCase();
+                        symbolCounts[key] = (symbolCounts[key] || 0) + entry.count;
+                    });
+                });
+                
+                return {
+                    totalCards,
+                    foundationCount,
+                    attackCount,
+                    actionCount,
+                    distribution,
+                    avgDiff,
+                    curveSpeed,
+                    symbolCounts
+                };
+            };
+            
+            const getDeckSynergyHints = () => {
+                if (builderDeck.cards.length === 0) return [];
+                
+                const stats = calculateDeckStats();
+                const hints = [];
+                const characterSymbols = builderDeck.character?.Symbols || [];
+                
+                // Foundation count hints
+                if (stats.foundationCount < 25) {
+                    hints.push({ type: 'warning', text: `Only ${stats.foundationCount} foundations - add ${25 - stats.foundationCount}+ more for consistency` });
+                } else if (stats.foundationCount > 35) {
+                    hints.push({ type: 'warning', text: `${stats.foundationCount} foundations is very high - consider more attacks/actions` });
+                }
+                
+                // Curve hints
+                if (stats.curveSpeed === 'AGGRO' && stats.foundationCount > 30) {
+                    hints.push({ type: 'info', text: '⚡ Aggro deck with many foundations - consider cutting to 25-28 for faster draws' });
+                } else if (stats.curveSpeed === 'CONTROL' && stats.foundationCount < 30) {
+                    hints.push({ type: 'info', text: '🛡️ Control deck wants 30-32 foundations for consistency' });
+                }
+                
+                // Symbol focus hints
+                if (characterSymbols.length > 0 && Object.keys(stats.symbolCounts).length > 0) {
+                    const totalNonFoundation = stats.totalCards - stats.foundationCount - 1;
+                    const charSymbolCounts = characterSymbols.reduce((sum, sym) => {
+                        return sum + (stats.symbolCounts[sym.toLowerCase()] || 0);
+                    }, 0);
+                    const focusPercentage = (charSymbolCounts / totalNonFoundation) * 100;
+                    
+                    if (focusPercentage < 70 && characterSymbols.length === 1) {
+                        hints.push({ type: 'warning', text: `Only ${focusPercentage.toFixed(0)}% ${characterSymbols[0]} cards - add more for better synergy` });
+                    } else if (focusPercentage > 90) {
+                        hints.push({ type: 'success', text: `✅ Strong ${characterSymbols.join('/')} focus (${focusPercentage.toFixed(0)}%)` });
+                    }
+                }
+                
+                // Specific symbol strategy hints
+                if (characterSymbols.includes('fire') || characterSymbols.includes('Fire')) {
+                    if (stats.curveSpeed !== 'AGGRO') {
+                        hints.push({ type: 'info', text: '🔥 Fire works best with aggressive curves (Diff 2-5)' });
+                    }
+                    if (stats.avgDiff > 5) {
+                        hints.push({ type: 'warning', text: '🔥 Fire average difficulty is high - lower curve for faster wins' });
+                    }
+                }
+                
+                if (characterSymbols.includes('water') || characterSymbols.includes('Water')) {
+                    if (stats.foundationCount < 28) {
+                        hints.push({ type: 'info', text: '💧 Water decks benefit from 28-30 foundations for defense' });
+                    }
+                }
+                
+                if (characterSymbols.includes('earth') || characterSymbols.includes('Earth')) {
+                    const highCostCards = stats.distribution['7-8'] + stats.distribution['9+'];
+                    if (highCostCards < 4) {
+                        hints.push({ type: 'info', text: '🌍 Earth decks want 4-6 high-cost finishers (Diff 7+)' });
+                    }
+                }
+                
+                // Attack/foundation balance
+                const attackRatio = stats.attackCount / stats.totalCards;
+                if (attackRatio < 0.3) {
+                    hints.push({ type: 'warning', text: 'Low attack count - add more threats to pressure opponent' });
+                } else if (attackRatio > 0.6) {
+                    hints.push({ type: 'warning', text: 'Very attack-heavy - may struggle with control checks' });
+                }
+                
+                return hints;
+            };
+            
             const parseAnalysis = (analysis) => {
                 const sections = [];
                 const lines = analysis.split('\n');
@@ -889,17 +1380,33 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                         // Get character's symbols
                         const characterSymbols = builderDeck.character?.Symbols || [];
                         
+                        // Get all unique symbols from cards
+                        const allSymbols = new Set();
+                        allCards.forEach(card => {
+                            const symbols = card.Symbols || [];
+                            symbols.forEach(s => allSymbols.add(s.toLowerCase()));
+                        });
+                        const uniqueSymbols = Array.from(allSymbols).sort();
+                        
                         const filteredCards = allCards.filter(card => {
                             // Don't show characters in card browser
                             if (card.Cardtype === 'Character') return false;
                             
-                            // Apply symbol filtering (unless "show all" is enabled)
-                            if (!builderFilters.showAllSymbols && builderDeck.character) {
+                            // Apply symbol tab filter
+                            if (builderFilters.activeSymbolTab !== 'all') {
+                                const cardSymbols = (card.Symbols || []).map(s => s.toLowerCase());
+                                if (!cardSymbols.includes(builderFilters.activeSymbolTab)) {
+                                    return false;
+                                }
+                            }
+                            
+                            // Apply symbol filtering (unless "show all" is enabled or browsing tabs)
+                            if (!builderFilters.showAllSymbols && builderDeck.character && builderFilters.activeSymbolTab === 'all') {
                                 const cardSymbols = card.Symbols || [];
                                 
                                 // Allow universal cards (with "all" symbol)
                                 const isUniversal = cardSymbols.some(s => 
-                                    s.toLowerCase() === 'all' || s.toLowerCase() === 'universal'
+                                    s.toLowerCase() === 'all' || s.toLowerCase() === 'universal' || s.toLowerCase() === 'infinity'
                                 );
                                 
                                 if (!isUniversal) {
@@ -936,7 +1443,7 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                         return (
                             <div>
                                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem'}}>
-                                    <div>
+                                    <div style={{flex: 1}}>
                                         <h2 style={{fontSize: '1.75rem', fontWeight: 700}}>⚒️ Deck Builder</h2>
                                         <input 
                                             className="input"
@@ -945,6 +1452,35 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                             placeholder="Deck Name"
                                             style={{marginTop: '0.5rem', maxWidth: '300px'}}
                                         />
+                                        
+                                        {/* Quick Templates */}
+                                        {builderDeck.cards.length === 0 && (
+                                            <details style={{marginTop: '0.75rem', fontSize: '0.85rem'}}>
+                                                <summary style={{cursor: 'pointer', opacity: 0.8}}>💡 Start from a template...</summary>
+                                                <div style={{display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap'}}>
+                                                    {Object.entries(DECK_TEMPLATES).map(([key, template]) => {
+                                                        const symbolInfo = SYMBOL_INFO[template.symbol] || {};
+                                                        return (
+                                                            <div 
+                                                                key={key}
+                                                                className="card template-card"
+                                                                onClick={() => {
+                                                                    alert(`Template: ${template.name}\n\n${template.description}\n\nStrategy: ${template.strategy}\n\n(Auto-generation coming in Phase 3!)`);
+                                                                }}
+                                                                style={{padding: '0.5rem 0.75rem', fontSize: '0.75rem', maxWidth: '150px'}}
+                                                            >
+                                                                <div style={{fontWeight: 600, marginBottom: '0.25rem'}}>
+                                                                    {symbolInfo.emoji || ''} {template.name}
+                                                                </div>
+                                                                <div style={{opacity: 0.7, fontSize: '0.7rem'}}>
+                                                                    {symbolInfo.playstyle || template.symbol}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </details>
+                                        )}
                                     </div>
                                     <div style={{display: 'flex', gap: '0.5rem'}}>
                                         <button onClick={clearBuilderDeck} className="btn-secondary btn" style={{width: 'auto', padding: '0.75rem 1.5rem', marginTop: 0}}>Clear</button>
@@ -965,6 +1501,38 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                     {/* Left Panel - Card Browser */}
                                     <div className="builder-panel card">
                                         <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>Card Browser</h3>
+                                        
+                                        {/* Symbol Tabs */}
+                                        {uniqueSymbols.length > 0 && (
+                                            <div style={{marginBottom: '1rem', padding: '0.5rem', borderRadius: '8px', border: '1px solid'}}>
+                                                <div style={{fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.5rem', opacity: 0.8}}>
+                                                    Browse by Symbol:
+                                                </div>
+                                                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
+                                                    <button
+                                                        onClick={() => setBuilderFilters({ ...builderFilters, activeSymbolTab: 'all' })}
+                                                        className={builderFilters.activeSymbolTab === 'all' ? 'btn-primary' : 'btn-secondary'}
+                                                        style={{padding: '0.4rem 0.8rem', fontSize: '0.8rem', marginTop: 0, width: 'auto'}}
+                                                    >
+                                                        All
+                                                    </button>
+                                                    {uniqueSymbols.map(symbol => {
+                                                        const info = SYMBOL_INFO[symbol] || {};
+                                                        return (
+                                                            <button
+                                                                key={symbol}
+                                                                onClick={() => setBuilderFilters({ ...builderFilters, activeSymbolTab: symbol })}
+                                                                className={builderFilters.activeSymbolTab === symbol ? 'btn-primary' : 'btn-secondary'}
+                                                                style={{padding: '0.4rem 0.8rem', fontSize: '0.8rem', marginTop: 0, width: 'auto'}}
+                                                                title={info.name || symbol}
+                                                            >
+                                                                {info.emoji || ''} {(info.name || symbol).charAt(0).toUpperCase() + (info.name || symbol).slice(1)}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
                                         
                                         <input
                                             type="text"
@@ -1044,7 +1612,10 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                             {filteredCards.slice(0, 100).map(card => {
                                                 const cardSymbols = card.Symbols || [];
                                                 const symbolDisplay = cardSymbols.length > 0 
-                                                    ? cardSymbols.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')
+                                                    ? cardSymbols.map(s => {
+                                                        const info = SYMBOL_INFO[s.toLowerCase()];
+                                                        return info ? `${info.emoji} ${info.name}` : s.charAt(0).toUpperCase() + s.slice(1);
+                                                    }).join(', ')
                                                     : 'None';
                                                 
                                                 return (
@@ -1076,6 +1647,96 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                         <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>
                                             Your Deck ({totalCards}/60)
                                         </h3>
+                                        
+                                        {/* Deck Stats */}
+                                        {builderDeck.cards.length > 0 && (() => {
+                                            const stats = calculateDeckStats();
+                                            const maxDistValue = Math.max(...Object.values(stats.distribution));
+                                            const hints = getDeckSynergyHints();
+                                            
+                                            return (
+                                                <>
+                                                    {/* Synergy Hints */}
+                                                    {hints.length > 0 && (
+                                                        <div style={{marginBottom: '1rem'}}>
+                                                            {hints.map((hint, i) => (
+                                                                <div 
+                                                                    key={i}
+                                                                    className="card"
+                                                                    style={{
+                                                                        padding: '0.75rem',
+                                                                        marginBottom: '0.5rem',
+                                                                        fontSize: '0.8rem',
+                                                                        borderLeft: `3px solid ${
+                                                                            hint.type === 'success' ? '#14b8a6' :
+                                                                            hint.type === 'warning' ? '#f59e0b' :
+                                                                            '#3b82f6'
+                                                                        }`
+                                                                    }}
+                                                                >
+                                                                    {hint.type === 'success' ? '✅' : hint.type === 'warning' ? '⚠️' : '💡'} {hint.text}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <div className="card" style={{padding: '1rem', marginBottom: '1rem'}}>
+                                                    <div style={{fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem'}}>
+                                                        📊 Deck Statistics
+                                                    </div>
+                                                    
+                                                    <div style={{fontSize: '0.8rem', marginBottom: '0.5rem'}}>
+                                                        <strong>Curve Speed:</strong> {stats.curveSpeed === 'AGGRO' ? '⚡' : stats.curveSpeed === 'CONTROL' ? '🛡️' : '⚖️'} {stats.curveSpeed}
+                                                    </div>
+                                                    
+                                                    <div style={{fontSize: '0.8rem', marginBottom: '0.5rem'}}>
+                                                        <strong>Avg Difficulty:</strong> {stats.avgDiff}
+                                                    </div>
+                                                    
+                                                    <div style={{fontSize: '0.75rem', marginBottom: '0.5rem', opacity: 0.9}}>
+                                                        Foundations: {stats.foundationCount} • Attacks: {stats.attackCount} • Actions: {stats.actionCount}
+                                                    </div>
+                                                    
+                                                    <details style={{fontSize: '0.75rem', marginTop: '0.5rem'}}>
+                                                        <summary style={{cursor: 'pointer', fontWeight: 600}}>Difficulty Distribution ▼</summary>
+                                                        <div style={{marginTop: '0.5rem', paddingLeft: '0.5rem'}}>
+                                                            {Object.entries(stats.distribution).map(([range, count]) => {
+                                                                const percentage = maxDistValue > 0 ? (count / maxDistValue) * 100 : 0;
+                                                                return (
+                                                                    <div key={range} style={{marginBottom: '0.25rem'}}>
+                                                                        <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', marginBottom: '0.1rem'}}>
+                                                                            <span>Diff {range}:</span>
+                                                                            <span>{count} cards</span>
+                                                                        </div>
+                                                                        <div style={{width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden'}}>
+                                                                            <div style={{width: `${percentage}%`, height: '100%', background: '#14b8a6', transition: 'width 0.3s'}}></div>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </details>
+                                                    
+                                                    {Object.keys(stats.symbolCounts).length > 0 && (
+                                                        <details style={{fontSize: '0.75rem', marginTop: '0.5rem'}}>
+                                                            <summary style={{cursor: 'pointer', fontWeight: 600}}>Symbol Distribution ▼</summary>
+                                                            <div style={{marginTop: '0.5rem', paddingLeft: '0.5rem'}}>
+                                                                {Object.entries(stats.symbolCounts).map(([symbol, count]) => {
+                                                                    const info = SYMBOL_INFO[symbol] || {};
+                                                                    const percentage = ((count / (totalCards - 1)) * 100).toFixed(0);
+                                                                    return (
+                                                                        <div key={symbol} style={{marginBottom: '0.25rem', fontSize: '0.7rem'}}>
+                                                                            {info.emoji || ''} {info.name || symbol}: {count} cards ({percentage}%)
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </details>
+                                                    )}
+                                                </div>
+                                                </>
+                                            );
+                                        })()}
                                         
                                         {/* Validation */}
                                         {(validation.errors.length > 0 || validation.warnings.length > 0) && (
@@ -1109,15 +1770,76 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                             </select>
                                             
                                             {builderDeck.character && (
-                                                <div style={{marginTop: '0.75rem', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem'}}>
-                                                    <strong>Symbols:</strong> {characterSymbols.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}
-                                                    <br/>
-                                                    <span style={{opacity: 0.8, fontSize: '0.8rem'}}>
-                                                        {builderFilters.showAllSymbols 
-                                                            ? '⚠️ Showing all cards (some may be illegal)'
-                                                            : '✅ Only showing legal cards for this character'
-                                                        }
-                                                    </span>
+                                                <div style={{marginTop: '0.75rem'}}>
+                                                    <div style={{padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '0.75rem'}}>
+                                                        <strong>Symbols:</strong> {characterSymbols.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}
+                                                        <br/>
+                                                        <span style={{opacity: 0.8, fontSize: '0.8rem'}}>
+                                                            {builderFilters.showAllSymbols 
+                                                                ? '⚠️ Showing all cards (some may be illegal)'
+                                                                : '✅ Only showing legal cards for this character'
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    {/* Symbol Strategy Info */}
+                                                    {characterSymbols.length > 0 && characterSymbols.map(symbol => {
+                                                        const symbolKey = symbol.toLowerCase();
+                                                        const info = SYMBOL_INFO[symbolKey] || SYMBOL_INFO['infinity'];
+                                                        if (!info) return null;
+                                                        
+                                                        return (
+                                                            <div key={symbol} className="card" style={{padding: '1rem', marginBottom: '0.75rem'}}>
+                                                                <div style={{fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem'}}>
+                                                                    {info.emoji} {info.name} Strategy
+                                                                </div>
+                                                                <div style={{fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600, opacity: 0.9}}>
+                                                                    {info.playstyle}
+                                                                </div>
+                                                                <div style={{fontSize: '0.8rem', lineHeight: 1.5, marginBottom: '0.75rem'}}>
+                                                                    {info.description}
+                                                                </div>
+                                                                
+                                                                <details style={{fontSize: '0.75rem', marginTop: '0.5rem'}}>
+                                                                    <summary style={{cursor: 'pointer', fontWeight: 600, marginBottom: '0.5rem'}}>
+                                                                        Show Details ▼
+                                                                    </summary>
+                                                                    <div style={{paddingLeft: '1rem'}}>
+                                                                        <div style={{marginBottom: '0.5rem'}}>
+                                                                            <strong>Mechanics:</strong>
+                                                                            <ul style={{marginTop: '0.25rem', marginLeft: '1rem'}}>
+                                                                                {info.mechanics.map((m, i) => (
+                                                                                    <li key={i} style={{marginBottom: '0.15rem'}}>{m}</li>
+                                                                                ))}
+                                                                            </ul>
+                                                                        </div>
+                                                                        <div style={{marginBottom: '0.5rem'}}>
+                                                                            <strong>✅ Strengths:</strong>
+                                                                            <ul style={{marginTop: '0.25rem', marginLeft: '1rem'}}>
+                                                                                {info.strengths.map((s, i) => (
+                                                                                    <li key={i} style={{marginBottom: '0.15rem'}}>{s}</li>
+                                                                                ))}
+                                                                            </ul>
+                                                                        </div>
+                                                                        <div style={{marginBottom: '0.5rem'}}>
+                                                                            <strong>❌ Weaknesses:</strong>
+                                                                            <ul style={{marginTop: '0.25rem', marginLeft: '1rem'}}>
+                                                                                {info.weaknesses.map((w, i) => (
+                                                                                    <li key={i} style={{marginBottom: '0.15rem'}}>{w}</li>
+                                                                                ))}
+                                                                            </ul>
+                                                                        </div>
+                                                                        <div style={{marginBottom: '0.5rem'}}>
+                                                                            <strong>💡 Recommended for:</strong> {info.recommendedFor}
+                                                                        </div>
+                                                                        <div>
+                                                                            <strong>🎯 Archetypes:</strong> {info.archetypes.join(', ')}
+                                                                        </div>
+                                                                    </div>
+                                                                </details>
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                             )}
                                         </div>
