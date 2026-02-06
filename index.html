@@ -755,6 +755,26 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                 }
             };
             
+            const debugCardStructure = () => {
+                const allCards = Object.values(cardDatabase).flat();
+                if (allCards.length === 0) {
+                    alert('No cards loaded! Load sets first in Settings.');
+                    return;
+                }
+                
+                const sampleCard = allCards[0];
+                const sampleCharacter = allCards.find(c => c.Cardtype === 'Character') || sampleCard;
+                
+                console.log('=== SAMPLE CARD ===');
+                console.log(sampleCard);
+                console.log('\n=== SAMPLE CHARACTER ===');
+                console.log(sampleCharacter);
+                console.log('\n=== ALL FIELDS ON SAMPLE CARD ===');
+                console.log(Object.keys(sampleCard));
+                
+                alert('Card structure logged to console! Press F12 to view.\n\nLook for fields like: Symbol, Resource, Element, Faction, etc.');
+            };
+            
             const parseAnalysis = (analysis) => {
                 const sections = [];
                 const lines = analysis.split('\n');
@@ -1228,6 +1248,13 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                             
                             <h3 style={{fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem'}}>📦 Card Sets</h3>
                             <p style={{marginBottom: '1rem'}}>{availableSets.length} sets available</p>
+                            
+                            {loadedSets.length > 0 && (
+                                <button onClick={debugCardStructure} className="btn btn-secondary" style={{marginBottom: '1rem'}}>
+                                    🔍 Debug: Show Card Structure
+                                </button>
+                            )}
+                            
                             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem', maxHeight: '400px', overflow: 'auto', padding: '0.5rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid'}}>
                                 {availableSets.map(set => (
                                     <label key={set.id} style={{display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid', borderRadius: '6px', cursor: 'pointer'}}>
