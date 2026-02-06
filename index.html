@@ -286,7 +286,8 @@
             const [builderFilters, setBuilderFilters] = useState({
                 types: ['Attack', 'Foundation', 'Action'],
                 diffMin: 0,
-                diffMax: 10
+                diffMax: 10,
+                showAllSymbols: false
             });
             
             useEffect(() => {
@@ -885,12 +886,44 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                         const allCards = Object.values(cardDatabase).flat();
                         const characters = allCards.filter(c => c.Cardtype === 'Character');
                         
+                        // Get character's symbols
+                        const characterSymbols = builderDeck.character?.Symbols || [];
+                        
                         const filteredCards = allCards.filter(card => {
+                            // Don't show characters in card browser
                             if (card.Cardtype === 'Character') return false;
+                            
+                            // Apply symbol filtering (unless "show all" is enabled)
+                            if (!builderFilters.showAllSymbols && builderDeck.character) {
+                                const cardSymbols = card.Symbols || [];
+                                
+                                // Allow universal cards (with "all" symbol)
+                                const isUniversal = cardSymbols.some(s => 
+                                    s.toLowerCase() === 'all' || s.toLowerCase() === 'universal'
+                                );
+                                
+                                if (!isUniversal) {
+                                    // Check if card shares any symbol with character
+                                    const hasMatchingSymbol = cardSymbols.some(cardSym => 
+                                        characterSymbols.some(charSym => 
+                                            cardSym.toLowerCase() === charSym.toLowerCase()
+                                        )
+                                    );
+                                    
+                                    if (!hasMatchingSymbol) return false;
+                                }
+                            }
+                            
+                            // Apply search filter
                             if (builderSearch && !card.Name.toLowerCase().includes(builderSearch.toLowerCase())) return false;
+                            
+                            // Apply type filter
                             if (!builderFilters.types.includes(card.Cardtype)) return false;
+                            
+                            // Apply difficulty filter
                             const diff = card.Difficulty || 0;
                             if (diff < builderFilters.diffMin || diff > builderFilters.diffMax) return false;
+                            
                             return true;
                         }).sort((a, b) => a.Name.localeCompare(b.Name));
                         
@@ -922,6 +955,10 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                 
                                 {Object.keys(cardDatabase).length === 0 && (
                                     <div className="alert alert-warning">⚠️ No card sets loaded. Go to Settings and load sets first!</div>
+                                )}
+                                
+                                {Object.keys(cardDatabase).length > 0 && !builderDeck.character && (
+                                    <div className="alert alert-info">💡 Select a character first to see which cards you can legally play!</div>
                                 )}
                                 
                                 <div className="builder-container">
@@ -983,6 +1020,20 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                                     />
                                                 </div>
                                             </div>
+                                            
+                                            {builderDeck.character && (
+                                                <div className="builder-filter-group">
+                                                    <span className="builder-filter-label">Symbol Filter</span>
+                                                    <label style={{display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem'}}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={builderFilters.showAllSymbols}
+                                                            onChange={e => setBuilderFilters({ ...builderFilters, showAllSymbols: e.target.checked })}
+                                                        />
+                                                        Show all symbols
+                                                    </label>
+                                                </div>
+                                            )}
                                         </div>
                                         
                                         <div style={{fontSize: '0.85rem', opacity: 0.8, marginBottom: '0.75rem'}}>
@@ -990,20 +1041,28 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                         </div>
                                         
                                         <div className="card-browser">
-                                            {filteredCards.slice(0, 100).map(card => (
-                                                <div key={card.Name + card.setId} className="card-row card">
-                                                    <div className="card-info">
-                                                        <div className="card-name">{card.Name}</div>
-                                                        <div className="card-stats">
-                                                            {card.Cardtype} • 
-                                                            {card.Difficulty != null && ` Diff: ${card.Difficulty} •`}
-                                                            {card.Check != null && ` Ctrl: ${card.Check} •`}
-                                                            {card.Speed != null && ` Spd: ${card.Speed}`}
+                                            {filteredCards.slice(0, 100).map(card => {
+                                                const cardSymbols = card.Symbols || [];
+                                                const symbolDisplay = cardSymbols.length > 0 
+                                                    ? cardSymbols.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')
+                                                    : 'None';
+                                                
+                                                return (
+                                                    <div key={card.Name + card.setId} className="card-row card">
+                                                        <div className="card-info">
+                                                            <div className="card-name">{card.Name}</div>
+                                                            <div className="card-stats">
+                                                                {card.Cardtype} • 
+                                                                {card.Difficulty != null && ` Diff: ${card.Difficulty} •`}
+                                                                {card.Check != null && ` Ctrl: ${card.Check} •`}
+                                                                {card.Speed != null && ` Spd: ${card.Speed} •`}
+                                                                {` ${symbolDisplay}`}
+                                                            </div>
                                                         </div>
+                                                        <button onClick={() => addCardToBuilder(card)} className="card-add-btn btn-primary">+</button>
                                                     </div>
-                                                    <button onClick={() => addCardToBuilder(card)} className="card-add-btn btn-primary">+</button>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                             {filteredCards.length > 100 && (
                                                 <div style={{textAlign: 'center', padding: '1rem', opacity: 0.6}}>
                                                     Showing first 100 cards. Refine your search to see more.
@@ -1044,10 +1103,23 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                                 <option value="">Select Character...</option>
                                                 {characters.map(char => (
                                                     <option key={char.Name + char.setId} value={char.Name}>
-                                                        {char.Name}
+                                                        {char.Name} {char.Symbols && char.Symbols.length > 0 && `(${char.Symbols.join(', ')})`}
                                                     </option>
                                                 ))}
                                             </select>
+                                            
+                                            {builderDeck.character && (
+                                                <div style={{marginTop: '0.75rem', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem'}}>
+                                                    <strong>Symbols:</strong> {characterSymbols.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}
+                                                    <br/>
+                                                    <span style={{opacity: 0.8, fontSize: '0.8rem'}}>
+                                                        {builderFilters.showAllSymbols 
+                                                            ? '⚠️ Showing all cards (some may be illegal)'
+                                                            : '✅ Only showing legal cards for this character'
+                                                        }
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                         
                                         {/* Foundations */}
