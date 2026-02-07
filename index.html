@@ -1856,6 +1856,8 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                         const foundations = builderDeck.cards.filter(c => c.card.Cardtype === 'Foundation');
                         const attacks = builderDeck.cards.filter(c => c.card.Cardtype === 'Attack');
                         const actions = builderDeck.cards.filter(c => c.card.Cardtype === 'Action');
+                        const assets = builderDeck.cards.filter(c => c.card.Cardtype === 'Asset');
+                        const backups = builderDeck.cards.filter(c => c.card.Cardtype === 'Backup');
                         const validation = validateBuilderDeck();
                         
                         return (
