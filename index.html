@@ -655,6 +655,7 @@
             const [importText, setImportText] = useState('');
             const [showHandSimulator, setShowHandSimulator] = useState(false);
             const [simulatedHands, setSimulatedHands] = useState([]);
+            const [expandedCards, setExpandedCards] = useState(new Set());
             
             useEffect(() => {
                 const stored = localStorage.getItem('universus-decks-v3');
@@ -1134,6 +1135,80 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                         cards: []
                     });
                 }
+            };
+            
+            const toggleCardExpansion = (cardName) => {
+                const newExpanded = new Set(expandedCards);
+                if (newExpanded.has(cardName)) {
+                    newExpanded.delete(cardName);
+                } else {
+                    newExpanded.add(cardName);
+                }
+                setExpandedCards(newExpanded);
+            };
+            
+            const getRecommendedSetsForCharacter = (character) => {
+                if (!character || !character.Symbols) return [];
+                
+                const charSymbols = character.Symbols.map(s => s.toLowerCase());
+                const setScores = {};
+                
+                // Scan all available sets to count matching cards
+                availableSets.forEach(setName => {
+                    const setCards = cardDatabase[setName] || [];
+                    let matchingCards = 0;
+                    
+                    setCards.forEach(card => {
+                        if (card.Cardtype === 'Character') return;
+                        
+                        const cardSymbols = (card.Symbols || []).map(s => s.toLowerCase());
+                        const hasMatch = cardSymbols.some(cs => 
+                            charSymbols.includes(cs) || cs === 'all' || cs === 'infinity'
+                        );
+                        
+                        if (hasMatch) matchingCards++;
+                    });
+                    
+                    if (matchingCards > 0) {
+                        setScores[setName] = matchingCards;
+                    }
+                });
+                
+                // Sort by matching card count
+                return Object.entries(setScores)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([setName, count]) => ({ setName, count }));
+            };
+            
+            const loadRecommendedSets = async (character) => {
+                const recommended = getRecommendedSetsForCharacter(character);
+                const setsToLoad = recommended.map(r => r.setName);
+                
+                if (setsToLoad.length === 0) {
+                    alert('No sets found with matching symbols!');
+                    return;
+                }
+                
+                // Load the recommended sets
+                setIsLoadingSets(true);
+                const newDatabase = { ...cardDatabase };
+                
+                for (let i = 0; i < setsToLoad.length; i++) {
+                    const setName = setsToLoad[i];
+                    if (newDatabase[setName]) continue; // Already loaded
+                    
+                    try {
+                        const response = await fetch(`https://api.gatcg.com/cards/export?set=${setName}`);
+                        const data = await response.json();
+                        newDatabase[setName] = data;
+                        setCardDatabase({ ...newDatabase });
+                    } catch (err) {
+                        console.error(`Failed to load ${setName}:`, err);
+                    }
+                }
+                
+                setLoadedSets([...new Set([...loadedSets, ...setsToLoad])]);
+                setIsLoadingSets(false);
             };
             
             const importDeckFromText = (text) => {
@@ -2251,19 +2326,100 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                                     }).join(', ')
                                                     : 'None';
                                                 
+                                                const isExpanded = expandedCards.has(card.Name + card.setId);
+                                                const hasDetails = card.Abilities?.length > 0 || card.BlockMod || card.BlockZone || card.Keywords?.length > 0;
+                                                
                                                 return (
-                                                    <div key={card.Name + card.setId} className="card-row card">
-                                                        <div className="card-info">
-                                                            <div className="card-name">{card.Name}</div>
-                                                            <div className="card-stats">
-                                                                {card.Cardtype} • 
-                                                                {card.Difficulty != null && ` Diff: ${card.Difficulty} •`}
-                                                                {card.Check != null && ` Ctrl: ${card.Check} •`}
-                                                                {card.Speed != null && ` Spd: ${card.Speed} •`}
-                                                                {` ${symbolDisplay}`}
+                                                    <div key={card.Name + card.setId} className="card-row card" style={{flexDirection: 'column', alignItems: 'stretch'}}>
+                                                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                                            <div className="card-info" style={{flex: 1}}>
+                                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                                    <div className="card-name">{card.Name}</div>
+                                                                    {card.setId && (
+                                                                        <span style={{
+                                                                            fontSize: '0.7rem',
+                                                                            padding: '0.1rem 0.4rem',
+                                                                            borderRadius: '4px',
+                                                                            background: 'rgba(100,150,200,0.3)',
+                                                                            fontWeight: 600
+                                                                        }}>
+                                                                            {card.setId.toUpperCase()}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="card-stats">
+                                                                    {card.Cardtype} • 
+                                                                    {card.Difficulty != null && ` Diff: ${card.Difficulty} •`}
+                                                                    {card.Check != null && ` Ctrl: ${card.Check} •`}
+                                                                    {card.Speed != null && ` Spd: ${card.Speed} •`}
+                                                                    {card.Damage != null && ` Dmg: ${card.Damage} •`}
+                                                                    {` ${symbolDisplay}`}
+                                                                </div>
+                                                            </div>
+                                                            <div style={{display: 'flex', gap: '0.25rem', alignItems: 'center'}}>
+                                                                {hasDetails && (
+                                                                    <button 
+                                                                        onClick={() => toggleCardExpansion(card.Name + card.setId)}
+                                                                        style={{
+                                                                            padding: '0.25rem 0.5rem',
+                                                                            fontSize: '0.7rem',
+                                                                            border: 'none',
+                                                                            borderRadius: '4px',
+                                                                            cursor: 'pointer',
+                                                                            background: 'rgba(100,100,100,0.3)'
+                                                                        }}
+                                                                    >
+                                                                        {isExpanded ? '▲' : '▼'}
+                                                                    </button>
+                                                                )}
+                                                                <button onClick={() => addCardToBuilder(card)} className="card-add-btn btn-primary">+</button>
                                                             </div>
                                                         </div>
-                                                        <button onClick={() => addCardToBuilder(card)} className="card-add-btn btn-primary">+</button>
+                                                        
+                                                        {isExpanded && hasDetails && (
+                                                            <div style={{
+                                                                marginTop: '0.75rem',
+                                                                paddingTop: '0.75rem',
+                                                                borderTop: '1px solid rgba(255,255,255,0.1)',
+                                                                fontSize: '0.75rem',
+                                                                lineHeight: 1.4
+                                                            }}>
+                                                                {/* Block Info */}
+                                                                {(card.BlockMod || card.BlockZone) && (
+                                                                    <div style={{marginBottom: '0.5rem'}}>
+                                                                        <strong>Block:</strong> {card.BlockMod || ''} {card.BlockZone || ''}
+                                                                    </div>
+                                                                )}
+                                                                
+                                                                {/* Keywords */}
+                                                                {card.Keywords && card.Keywords.length > 0 && (
+                                                                    <div style={{marginBottom: '0.5rem'}}>
+                                                                        <strong>Keywords:</strong> {card.Keywords.map(k => k.Keyword || k).join(', ')}
+                                                                    </div>
+                                                                )}
+                                                                
+                                                                {/* Abilities */}
+                                                                {card.Abilities && card.Abilities.length > 0 && (
+                                                                    <div>
+                                                                        <strong>Abilities:</strong>
+                                                                        <ul style={{marginLeft: '1rem', marginTop: '0.25rem', marginBottom: 0}}>
+                                                                            {card.Abilities.map((ability, i) => (
+                                                                                <li key={i} style={{marginBottom: '0.25rem'}}>
+                                                                                    {ability.Type && <strong>{ability.Type}:</strong>} {ability.Effect || ability.Text || JSON.stringify(ability)}
+                                                                                </li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    </div>
+                                                                )}
+                                                                
+                                                                {/* Set Info */}
+                                                                {card.setName && (
+                                                                    <div style={{marginTop: '0.5rem', fontSize: '0.7rem', opacity: 0.7}}>
+                                                                        Set: {card.setName}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 );
                                             })}
@@ -2459,6 +2615,37 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                                                 : '✅ Only showing legal cards for this character'
                                                             }
                                                         </span>
+                                                        
+                                                        {/* Smart Set Loading */}
+                                                        {(() => {
+                                                            const recommended = getRecommendedSetsForCharacter(builderDeck.character);
+                                                            const notLoaded = recommended.filter(r => !loadedSets.includes(r.setName));
+                                                            
+                                                            if (notLoaded.length > 0) {
+                                                                return (
+                                                                    <div style={{marginTop: '0.75rem', padding: '0.75rem', borderRadius: '6px', background: 'rgba(100,150,200,0.2)'}}>
+                                                                        <div style={{fontSize: '0.8rem', marginBottom: '0.5rem'}}>
+                                                                            💡 <strong>{notLoaded.length} recommended sets</strong> contain {characterSymbols.join('/')} cards
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={() => loadRecommendedSets(builderDeck.character)}
+                                                                            className="btn btn-primary"
+                                                                            style={{fontSize: '0.75rem', padding: '0.5rem 0.75rem', marginTop: 0, width: 'auto'}}
+                                                                            disabled={isLoadingSets}
+                                                                        >
+                                                                            {isLoadingSets ? 'Loading...' : `Load ${notLoaded.length} Recommended Sets`}
+                                                                        </button>
+                                                                    </div>
+                                                                );
+                                                            } else if (recommended.length > 0) {
+                                                                return (
+                                                                    <div style={{marginTop: '0.75rem', fontSize: '0.75rem', opacity: 0.7}}>
+                                                                        ✅ All recommended sets already loaded
+                                                                    </div>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })()}
                                                     </div>
                                                     
                                                     {/* Symbol Strategy Info */}
