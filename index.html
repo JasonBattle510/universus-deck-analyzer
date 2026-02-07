@@ -645,12 +645,16 @@
             });
             const [builderSearch, setBuilderSearch] = useState('');
             const [builderFilters, setBuilderFilters] = useState({
-                types: ['Attack', 'Foundation', 'Action'],
+                types: ['Attack', 'Foundation', 'Action', 'Asset', 'Backup'],
                 diffMin: 0,
                 diffMax: 10,
                 showAllSymbols: false,
                 activeSymbolTab: 'all'
             });
+            const [showImportModal, setShowImportModal] = useState(false);
+            const [importText, setImportText] = useState('');
+            const [showHandSimulator, setShowHandSimulator] = useState(false);
+            const [simulatedHands, setSimulatedHands] = useState([]);
             
             useEffect(() => {
                 const stored = localStorage.getItem('universus-decks-v3');
@@ -1050,6 +1054,8 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                 const foundations = builderDeck.cards.filter(c => c.card.Cardtype === 'Foundation');
                 const attacks = builderDeck.cards.filter(c => c.card.Cardtype === 'Attack');
                 const actions = builderDeck.cards.filter(c => c.card.Cardtype === 'Action');
+                const assets = builderDeck.cards.filter(c => c.card.Cardtype === 'Asset');
+                const backups = builderDeck.cards.filter(c => c.card.Cardtype === 'Backup');
                 
                 if (foundations.length > 0) {
                     text += '[Foundations]\n';
@@ -1066,6 +1072,18 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                 if (actions.length > 0) {
                     text += '[Actions]\n';
                     actions.forEach(e => text += `${e.count} ${e.card.Name}\n`);
+                    text += '\n';
+                }
+                
+                if (assets.length > 0) {
+                    text += '[Assets]\n';
+                    assets.forEach(e => text += `${e.count} ${e.card.Name}\n`);
+                    text += '\n';
+                }
+                
+                if (backups.length > 0) {
+                    text += '[Backups]\n';
+                    backups.forEach(e => text += `${e.count} ${e.card.Name}\n`);
                 }
                 
                 return text;
@@ -1118,6 +1136,399 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                 }
             };
             
+            const importDeckFromText = (text) => {
+                if (!text.trim()) {
+                    alert('No deck list provided!');
+                    return;
+                }
+                
+                const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+                const importedCards = [];
+                let importedCharacter = null;
+                let currentSection = '';
+                
+                lines.forEach(line => {
+                    // Detect section headers
+                    if (line.startsWith('[') && line.endsWith(']')) {
+                        currentSection = line.toLowerCase();
+                        return;
+                    }
+                    
+                    // Skip empty lines and comments
+                    if (!line || line.startsWith('//') || line.startsWith('#')) return;
+                    
+                    // Parse card line: "4 Card Name" or "4x Card Name" or "Card Name x4"
+                    const match = line.match(/^(\d+)x?\s+(.+)$/i) || line.match(/^(.+)\s+x?(\d+)$/i);
+                    
+                    if (match) {
+                        let count, cardName;
+                        if (line.match(/^(\d+)/)) {
+                            count = parseInt(match[1]);
+                            cardName = match[2].trim();
+                        } else {
+                            cardName = match[1].trim();
+                            count = parseInt(match[2]);
+                        }
+                        
+                        // Search for card in database (case-insensitive)
+                        const allCards = Object.values(cardDatabase).flat();
+                        const foundCard = allCards.find(c => 
+                            c.Name.toLowerCase() === cardName.toLowerCase()
+                        );
+                        
+                        if (foundCard) {
+                            if (currentSection.includes('character') || foundCard.Cardtype === 'Character') {
+                                importedCharacter = foundCard;
+                            } else {
+                                importedCards.push({ card: foundCard, count });
+                            }
+                        } else {
+                            console.warn(`Card not found: ${cardName}`);
+                        }
+                    }
+                });
+                
+                // Consolidate duplicate cards
+                const consolidatedCards = [];
+                importedCards.forEach(entry => {
+                    const existing = consolidatedCards.find(c => c.card.Name === entry.card.Name);
+                    if (existing) {
+                        existing.count += entry.count;
+                    } else {
+                        consolidatedCards.push(entry);
+                    }
+                });
+                
+                // Update deck
+                setBuilderDeck({
+                    name: builderDeck.name || 'Imported Deck',
+                    character: importedCharacter,
+                    cards: consolidatedCards
+                });
+                
+                const totalImported = consolidatedCards.reduce((s, c) => s + c.count, 0) + (importedCharacter ? 1 : 0);
+                alert(`Imported ${totalImported} cards!\n\nCharacter: ${importedCharacter?.Name || 'None'}\nCards: ${consolidatedCards.length} unique`);
+            };
+            
+            const generateDeckFromTemplate = (templateKey) => {
+                const template = DECK_TEMPLATES[templateKey];
+                if (!template) return;
+                
+                const allCards = Object.values(cardDatabase).flat();
+                const symbol = template.symbol;
+                
+                // Find character with matching symbol
+                const character = allCards.find(c => 
+                    c.Cardtype === 'Character' && 
+                    c.Symbols?.some(s => s.toLowerCase() === symbol.toLowerCase())
+                );
+                
+                if (!character) {
+                    alert(`No ${symbol} character found in loaded sets!`);
+                    return;
+                }
+                
+                // Filter cards by symbol
+                const symbolCards = allCards.filter(c => 
+                    c.Cardtype !== 'Character' &&
+                    c.Symbols?.some(s => s.toLowerCase() === symbol.toLowerCase() || s.toLowerCase() === 'all' || s.toLowerCase() === 'infinity')
+                );
+                
+                const foundations = symbolCards.filter(c => c.Cardtype === 'Foundation');
+                const attacks = symbolCards.filter(c => c.Cardtype === 'Attack');
+                const actions = symbolCards.filter(c => c.Cardtype === 'Action');
+                
+                // Build deck based on archetype
+                const generatedCards = [];
+                
+                // Add foundations (25-30)
+                const foundationCount = template.symbol === 'fire' ? 25 : 28;
+                const selectedFoundations = foundations.sort(() => Math.random() - 0.5).slice(0, Math.min(8, foundations.length));
+                selectedFoundations.forEach(f => {
+                    const count = Math.floor(foundationCount / selectedFoundations.length);
+                    if (count > 0) generatedCards.push({ card: f, count: Math.min(4, count) });
+                });
+                
+                // Adjust to reach exact foundation count
+                let currentFoundationCount = generatedCards.reduce((s, c) => s + c.count, 0);
+                while (currentFoundationCount < foundationCount && selectedFoundations.length > 0) {
+                    const randomFoundation = generatedCards[Math.floor(Math.random() * generatedCards.length)];
+                    if (randomFoundation.count < 4) {
+                        randomFoundation.count++;
+                        currentFoundationCount++;
+                    }
+                }
+                
+                // Add attacks based on archetype
+                let attacksToAdd = 60 - currentFoundationCount - 1; // -1 for character
+                
+                if (template.symbol === 'fire' || template.symbol === 'air') {
+                    // Aggro: Low cost attacks
+                    const lowCostAttacks = attacks.filter(a => (a.Difficulty || 0) <= 5).sort(() => Math.random() - 0.5);
+                    let added = 0;
+                    lowCostAttacks.slice(0, 10).forEach(attack => {
+                        const count = Math.min(4, attacksToAdd - added);
+                        if (count > 0) {
+                            generatedCards.push({ card: attack, count });
+                            added += count;
+                        }
+                    });
+                } else if (template.symbol === 'earth' || template.symbol === 'death') {
+                    // Control: Mix of costs, some high
+                    const midCostAttacks = attacks.filter(a => {
+                        const diff = a.Difficulty || 0;
+                        return diff >= 4 && diff <= 6;
+                    }).sort(() => Math.random() - 0.5);
+                    const highCostAttacks = attacks.filter(a => (a.Difficulty || 0) >= 7).sort(() => Math.random() - 0.5);
+                    
+                    let added = 0;
+                    // Add 4-6 finishers
+                    highCostAttacks.slice(0, 2).forEach(attack => {
+                        const count = Math.min(2, attacksToAdd - added);
+                        if (count > 0) {
+                            generatedCards.push({ card: attack, count });
+                            added += count;
+                        }
+                    });
+                    // Fill rest with mid-cost
+                    midCostAttacks.slice(0, 8).forEach(attack => {
+                        const count = Math.min(4, attacksToAdd - added);
+                        if (count > 0) {
+                            generatedCards.push({ card: attack, count });
+                            added += count;
+                        }
+                    });
+                } else {
+                    // Midrange: Balanced
+                    const balancedAttacks = attacks.filter(a => {
+                        const diff = a.Difficulty || 0;
+                        return diff >= 3 && diff <= 6;
+                    }).sort(() => Math.random() - 0.5);
+                    
+                    let added = 0;
+                    balancedAttacks.slice(0, 10).forEach(attack => {
+                        const count = Math.min(4, attacksToAdd - added);
+                        if (count > 0) {
+                            generatedCards.push({ card: attack, count });
+                            added += count;
+                        }
+                    });
+                }
+                
+                // Add a few actions if available and space left
+                const currentTotal = generatedCards.reduce((s, c) => s + c.count, 0);
+                const spaceLeft = 59 - currentTotal; // 59 because character is separate
+                if (spaceLeft > 0 && actions.length > 0) {
+                    const randomActions = actions.sort(() => Math.random() - 0.5).slice(0, Math.min(2, actions.length));
+                    randomActions.forEach(action => {
+                        const count = Math.min(2, spaceLeft);
+                        if (count > 0) {
+                            generatedCards.push({ card: action, count });
+                        }
+                    });
+                }
+                
+                setBuilderDeck({
+                    name: template.name,
+                    character: character,
+                    cards: generatedCards
+                });
+                
+                const totalCards = generatedCards.reduce((s, c) => s + c.count, 0) + 1;
+                alert(`Generated ${template.name}!\n\n${totalCards} cards total\nCharacter: ${character.Name}`);
+            };
+            
+            const simulateOpeningHands = () => {
+                if (!builderDeck.character) {
+                    alert('Select a character first!');
+                    return;
+                }
+                
+                // Build full deck list
+                const deckList = [];
+                builderDeck.cards.forEach(entry => {
+                    for (let i = 0; i < entry.count; i++) {
+                        deckList.push(entry.card);
+                    }
+                });
+                
+                if (deckList.length !== 59) {
+                    alert(`Deck must have exactly 60 cards (including character).\nCurrent: ${deckList.length + 1} cards`);
+                    return;
+                }
+                
+                const handSize = builderDeck.character.HandSize || 6;
+                const hands = [];
+                
+                // Simulate 7 hands
+                for (let i = 0; i < 7; i++) {
+                    const shuffled = [...deckList].sort(() => Math.random() - 0.5);
+                    const hand = shuffled.slice(0, handSize);
+                    
+                    // Analyze hand
+                    const foundations = hand.filter(c => c.Cardtype === 'Foundation').length;
+                    const attacks = hand.filter(c => c.Cardtype === 'Attack').length;
+                    const actions = hand.filter(c => c.Cardtype === 'Action').length;
+                    const assets = hand.filter(c => c.Cardtype === 'Asset').length;
+                    const backups = hand.filter(c => c.Cardtype === 'Backup').length;
+                    
+                    // Determine if hand is playable
+                    let quality = 'good';
+                    let reason = '';
+                    
+                    if (foundations === 0) {
+                        quality = 'brick';
+                        reason = 'No foundations - cannot play anything';
+                    } else if (foundations === handSize) {
+                        quality = 'brick';
+                        reason = 'All foundations - no threats';
+                    } else if (foundations <= 2) {
+                        quality = 'risky';
+                        reason = 'Very few foundations - may struggle';
+                    } else if (attacks + actions === 0) {
+                        quality = 'slow';
+                        reason = 'No attacks - very slow start';
+                    } else if (foundations >= handSize - 1) {
+                        quality = 'slow';
+                        reason = 'Mostly foundations - slow pressure';
+                    }
+                    
+                    hands.push({
+                        cards: hand,
+                        foundations,
+                        attacks,
+                        actions,
+                        assets,
+                        backups,
+                        quality,
+                        reason
+                    });
+                }
+                
+                setSimulatedHands(hands);
+                setShowHandSimulator(true);
+            };
+            
+            const getAIDeckSuggestions = () => {
+                if (builderDeck.cards.length === 0 || !builderDeck.character) {
+                    return [];
+                }
+                
+                const suggestions = [];
+                const stats = calculateDeckStats();
+                const allCards = Object.values(cardDatabase).flat();
+                const characterSymbols = builderDeck.character.Symbols || [];
+                const deckCardNames = new Set(builderDeck.cards.map(c => c.card.Name.toLowerCase()));
+                
+                // Get available cards matching character symbols
+                const availableCards = allCards.filter(c =>
+                    c.Cardtype !== 'Character' &&
+                    !deckCardNames.has(c.Name.toLowerCase()) &&
+                    (c.Symbols?.some(s => characterSymbols.some(cs => s.toLowerCase() === cs.toLowerCase())) ||
+                     c.Symbols?.some(s => s.toLowerCase() === 'all' || s.toLowerCase() === 'infinity'))
+                );
+                
+                // Suggestion 1: Low foundation count
+                if (stats.foundationCount < 25) {
+                    const foundations = availableCards.filter(c => c.Cardtype === 'Foundation');
+                    if (foundations.length > 0) {
+                        const bestFoundation = foundations.sort((a, b) => (b.Check || 0) - (a.Check || 0))[0];
+                        suggestions.push({
+                            type: 'foundation',
+                            card: bestFoundation,
+                            reason: `Add foundations (currently ${stats.foundationCount}, need 28-30)`,
+                            priority: 'high'
+                        });
+                    }
+                }
+                
+                // Suggestion 2: Curve too high for aggro
+                if (stats.curveSpeed === 'AGGRO' && stats.avgDiff > 4.5) {
+                    const lowCostAttacks = availableCards.filter(c =>
+                        c.Cardtype === 'Attack' && (c.Difficulty || 0) <= 4
+                    );
+                    if (lowCostAttacks.length > 0) {
+                        const suggestion = lowCostAttacks.sort(() => Math.random() - 0.5)[0];
+                        suggestions.push({
+                            type: 'curve',
+                            card: suggestion,
+                            reason: 'Lower your curve - aggro decks want Diff 2-4 attacks',
+                            priority: 'medium'
+                        });
+                    }
+                }
+                
+                // Suggestion 3: Not enough attacks
+                if (stats.attackCount < 20) {
+                    const attacks = availableCards.filter(c => c.Cardtype === 'Attack');
+                    if (attacks.length > 0) {
+                        const suggestion = attacks.sort(() => Math.random() - 0.5)[0];
+                        suggestions.push({
+                            type: 'threat',
+                            card: suggestion,
+                            reason: `Add more attacks (currently ${stats.attackCount})`,
+                            priority: 'medium'
+                        });
+                    }
+                }
+                
+                // Suggestion 4: Missing finishers for control
+                if (stats.curveSpeed === 'CONTROL') {
+                    const hasFinishers = builderDeck.cards.some(c => (c.card.Difficulty || 0) >= 7);
+                    if (!hasFinishers) {
+                        const finishers = availableCards.filter(c =>
+                            c.Cardtype === 'Attack' && (c.Difficulty || 0) >= 7
+                        );
+                        if (finishers.length > 0) {
+                            const suggestion = finishers.sort((a, b) => (b.Damage || 0) - (a.Damage || 0))[0];
+                            suggestions.push({
+                                type: 'finisher',
+                                card: suggestion,
+                                reason: 'Control decks need big finishers (Diff 7+)',
+                                priority: 'high'
+                            });
+                        }
+                    }
+                }
+                
+                // Suggestion 5: Symbol synergy
+                if (characterSymbols.length > 0) {
+                    const symbolInfo = SYMBOL_INFO[characterSymbols[0].toLowerCase()];
+                    if (symbolInfo) {
+                        // Symbol-specific suggestions
+                        if (characterSymbols[0].toLowerCase() === 'fire') {
+                            const selfMillCards = availableCards.filter(c =>
+                                c.Abilities?.some(a => a.Effect?.toLowerCase().includes('mill') || a.Effect?.toLowerCase().includes('discard'))
+                            );
+                            if (selfMillCards.length > 0 && suggestions.length < 3) {
+                                suggestions.push({
+                                    type: 'synergy',
+                                    card: selfMillCards[0],
+                                    reason: '🔥 Fire benefits from self-mill effects',
+                                    priority: 'low'
+                                });
+                            }
+                        }
+                        
+                        if (characterSymbols[0].toLowerCase() === 'water') {
+                            const cardDrawCards = availableCards.filter(c =>
+                                c.Abilities?.some(a => a.Effect?.toLowerCase().includes('draw'))
+                            );
+                            if (cardDrawCards.length > 0 && suggestions.length < 3) {
+                                suggestions.push({
+                                    type: 'synergy',
+                                    card: cardDrawCards[0],
+                                    reason: '💧 Water excels with card draw',
+                                    priority: 'low'
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                return suggestions.slice(0, 3); // Max 3 suggestions
+            };
+            
             const debugCardStructure = () => {
                 const allCards = Object.values(cardDatabase).flat();
                 if (allCards.length === 0) {
@@ -1143,10 +1554,14 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                 const foundations = builderDeck.cards.filter(c => c.card.Cardtype === 'Foundation');
                 const attacks = builderDeck.cards.filter(c => c.card.Cardtype === 'Attack');
                 const actions = builderDeck.cards.filter(c => c.card.Cardtype === 'Action');
+                const assets = builderDeck.cards.filter(c => c.card.Cardtype === 'Asset');
+                const backups = builderDeck.cards.filter(c => c.card.Cardtype === 'Backup');
                 
                 const foundationCount = foundations.reduce((s, c) => s + c.count, 0);
                 const attackCount = attacks.reduce((s, c) => s + c.count, 0);
                 const actionCount = actions.reduce((s, c) => s + c.count, 0);
+                const assetCount = assets.reduce((s, c) => s + c.count, 0);
+                const backupCount = backups.reduce((s, c) => s + c.count, 0);
                 
                 // Calculate difficulty distribution
                 const distribution = { '0-2': 0, '3-4': 0, '5-6': 0, '7-8': 0, '9+': 0 };
@@ -1190,6 +1605,8 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                     foundationCount,
                     attackCount,
                     actionCount,
+                    assetCount,
+                    backupCount,
                     distribution,
                     avgDiff,
                     curveSpeed,
@@ -1466,7 +1883,13 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                                                 key={key}
                                                                 className="card template-card"
                                                                 onClick={() => {
-                                                                    alert(`Template: ${template.name}\n\n${template.description}\n\nStrategy: ${template.strategy}\n\n(Auto-generation coming in Phase 3!)`);
+                                                                    if (Object.keys(cardDatabase).length === 0) {
+                                                                        alert('Load card sets first in Settings!');
+                                                                        return;
+                                                                    }
+                                                                    if (confirm(`Generate ${template.name}?\n\n${template.description}\n\nThis will replace your current deck.`)) {
+                                                                        generateDeckFromTemplate(key);
+                                                                    }
                                                                 }}
                                                                 style={{padding: '0.5rem 0.75rem', fontSize: '0.75rem', maxWidth: '150px'}}
                                                             >
@@ -1484,6 +1907,8 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                         )}
                                     </div>
                                     <div style={{display: 'flex', gap: '0.5rem'}}>
+                                        <button onClick={() => setShowImportModal(true)} className="btn-secondary btn" style={{width: 'auto', padding: '0.75rem 1.5rem', marginTop: 0}}>📥 Import</button>
+                                        <button onClick={simulateOpeningHands} className="btn-secondary btn" style={{width: 'auto', padding: '0.75rem 1.5rem', marginTop: 0}} disabled={builderDeck.cards.length === 0}>🎲 Test Hands</button>
                                         <button onClick={clearBuilderDeck} className="btn-secondary btn" style={{width: 'auto', padding: '0.75rem 1.5rem', marginTop: 0}}>Clear</button>
                                         <button onClick={saveBuilderDeck} className="btn-primary btn" style={{width: 'auto', padding: '0.75rem 1.5rem', marginTop: 0}}>Save to Library</button>
                                         <button onClick={analyzeBuilderDeck} className="btn-success btn" style={{width: 'auto', padding: '0.75rem 1.5rem', marginTop: 0}} disabled={!validation.isValid}>🤖 Analyze</button>
@@ -1496,6 +1921,190 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                 
                                 {Object.keys(cardDatabase).length > 0 && !builderDeck.character && (
                                     <div className="alert alert-info">💡 Select a character first to see which cards you can legally play!</div>
+                                )}
+                                
+                                {/* Import Modal */}
+                                {showImportModal && (
+                                    <div style={{
+                                        position: 'fixed',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        background: 'rgba(0,0,0,0.8)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        zIndex: 9999
+                                    }} onClick={() => setShowImportModal(false)}>
+                                        <div className="card" style={{
+                                            maxWidth: '600px',
+                                            width: '90%',
+                                            maxHeight: '80vh',
+                                            overflow: 'auto',
+                                            padding: '2rem'
+                                        }} onClick={e => e.stopPropagation()}>
+                                            <h2 style={{fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem'}}>📥 Import Deck from Text</h2>
+                                            
+                                            <p style={{fontSize: '0.85rem', marginBottom: '1rem', opacity: 0.8}}>
+                                                Paste your deck list below. Supports formats like:
+                                            </p>
+                                            
+                                            <div style={{fontSize: '0.75rem', marginBottom: '1rem', padding: '0.75rem', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', fontFamily: 'monospace'}}>
+                                                [Character]<br/>
+                                                1 May<br/>
+                                                <br/>
+                                                [Foundations]<br/>
+                                                4 Ocean Buddies<br/>
+                                                4 Family Hug<br/>
+                                                <br/>
+                                                [Attacks]<br/>
+                                                4 Throw Servant<br/>
+                                                4x Great Yamada Attack
+                                            </div>
+                                            
+                                            <textarea
+                                                className="textarea"
+                                                value={importText}
+                                                onChange={e => setImportText(e.target.value)}
+                                                placeholder="Paste deck list here..."
+                                                style={{minHeight: '200px', marginBottom: '1rem'}}
+                                            />
+                                            
+                                            <div style={{display: 'flex', gap: '0.5rem'}}>
+                                                <button 
+                                                    onClick={() => {
+                                                        importDeckFromText(importText);
+                                                        setShowImportModal(false);
+                                                        setImportText('');
+                                                    }}
+                                                    className="btn btn-primary"
+                                                    disabled={!importText.trim()}
+                                                >
+                                                    Import Deck
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        setShowImportModal(false);
+                                                        setImportText('');
+                                                    }}
+                                                    className="btn btn-secondary"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Opening Hand Simulator Modal */}
+                                {showHandSimulator && (
+                                    <div style={{
+                                        position: 'fixed',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        background: 'rgba(0,0,0,0.8)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        zIndex: 9999,
+                                        padding: '2rem'
+                                    }} onClick={() => setShowHandSimulator(false)}>
+                                        <div className="card" style={{
+                                            maxWidth: '900px',
+                                            width: '100%',
+                                            maxHeight: '90vh',
+                                            overflow: 'auto',
+                                            padding: '2rem'
+                                        }} onClick={e => e.stopPropagation()}>
+                                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem'}}>
+                                                <h2 style={{fontSize: '1.5rem', fontWeight: 700}}>🎲 Opening Hand Simulator</h2>
+                                                <button onClick={() => setShowHandSimulator(false)} style={{padding: '0.5rem 1rem', border: 'none', borderRadius: '6px', cursor: 'pointer'}} className="btn-secondary">
+                                                    Close
+                                                </button>
+                                            </div>
+                                            
+                                            {(() => {
+                                                const goodHands = simulatedHands.filter(h => h.quality === 'good').length;
+                                                const riskyHands = simulatedHands.filter(h => h.quality === 'risky' || h.quality === 'slow').length;
+                                                const brickHands = simulatedHands.filter(h => h.quality === 'brick').length;
+                                                const consistency = ((goodHands / simulatedHands.length) * 100).toFixed(0);
+                                                
+                                                return (
+                                                    <>
+                                                        <div className="card" style={{padding: '1rem', marginBottom: '1.5rem'}}>
+                                                            <div style={{fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem'}}>
+                                                                Consistency Score: {consistency}%
+                                                            </div>
+                                                            <div style={{fontSize: '0.8rem', opacity: 0.9}}>
+                                                                ✅ Good Hands: {goodHands}/7 •  
+                                                                ⚠️ Risky/Slow: {riskyHands}/7 • 
+                                                                ❌ Brick: {brickHands}/7
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div style={{display: 'grid', gap: '1rem'}}>
+                                                            {simulatedHands.map((hand, i) => (
+                                                                <div key={i} className="card" style={{
+                                                                    padding: '1rem',
+                                                                    borderLeft: `4px solid ${
+                                                                        hand.quality === 'good' ? '#14b8a6' :
+                                                                        hand.quality === 'brick' ? '#ef4444' :
+                                                                        '#f59e0b'
+                                                                    }`
+                                                                }}>
+                                                                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem'}}>
+                                                                        <div style={{fontWeight: 600}}>
+                                                                            Hand {i + 1} {
+                                                                                hand.quality === 'good' ? '✅' :
+                                                                                hand.quality === 'brick' ? '❌' :
+                                                                                '⚠️'
+                                                                            }
+                                                                        </div>
+                                                                        <div style={{fontSize: '0.8rem', opacity: 0.8}}>
+                                                                            {hand.foundations} F • {hand.attacks} A • {hand.actions} Act • {hand.assets} Ast • {hand.backups} Bak
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    {hand.reason && (
+                                                                        <div style={{fontSize: '0.75rem', opacity: 0.7, marginBottom: '0.5rem'}}>
+                                                                            {hand.reason}
+                                                                        </div>
+                                                                    )}
+                                                                    
+                                                                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '0.25rem', fontSize: '0.7rem'}}>
+                                                                        {hand.cards.map((card, j) => (
+                                                                            <div key={j} style={{
+                                                                                padding: '0.25rem 0.5rem',
+                                                                                borderRadius: '4px',
+                                                                                background: card.Cardtype === 'Foundation' ? 'rgba(100,200,100,0.2)' :
+                                                                                           card.Cardtype === 'Attack' ? 'rgba(200,100,100,0.2)' :
+                                                                                           card.Cardtype === 'Asset' ? 'rgba(200,200,100,0.2)' :
+                                                                                           card.Cardtype === 'Backup' ? 'rgba(150,100,200,0.2)' :
+                                                                                           'rgba(100,100,200,0.2)'
+                                                                            }}>
+                                                                                {card.Name}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        
+                                                        <button 
+                                                            onClick={() => simulateOpeningHands()}
+                                                            className="btn btn-primary"
+                                                            style={{marginTop: '1rem'}}
+                                                        >
+                                                            🔄 Draw 7 More Hands
+                                                        </button>
+                                                    </>
+                                                );
+                                            })()}
+                                        </div>
+                                    </div>
                                 )}
                                 
                                 <div className="builder-container">
@@ -1547,7 +2156,7 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                             <div className="builder-filter-group">
                                                 <span className="builder-filter-label">Card Types</span>
                                                 <div style={{display: 'flex', gap: '0.5rem'}}>
-                                                    {['Attack', 'Foundation', 'Action'].map(type => (
+                                                    {['Attack', 'Foundation', 'Action', 'Asset', 'Backup'].map(type => (
                                                         <label key={type} style={{display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem'}}>
                                                             <input
                                                                 type="checkbox"
@@ -1675,9 +2284,55 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                             const stats = calculateDeckStats();
                                             const maxDistValue = Math.max(...Object.values(stats.distribution));
                                             const hints = getDeckSynergyHints();
+                                            const aiSuggestions = getAIDeckSuggestions();
                                             
                                             return (
                                                 <>
+                                                    {/* AI Suggestions */}
+                                                    {aiSuggestions.length > 0 && (
+                                                        <div style={{marginBottom: '1rem'}}>
+                                                            <div style={{fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem'}}>
+                                                                🤖 AI Suggestions
+                                                            </div>
+                                                            {aiSuggestions.map((suggestion, i) => (
+                                                                <div 
+                                                                    key={i}
+                                                                    className="card"
+                                                                    style={{
+                                                                        padding: '0.75rem',
+                                                                        marginBottom: '0.5rem',
+                                                                        fontSize: '0.75rem',
+                                                                        cursor: 'pointer',
+                                                                        transition: 'all 0.2s'
+                                                                    }}
+                                                                    onClick={() => addCardToBuilder(suggestion.card)}
+                                                                    title="Click to add to deck"
+                                                                >
+                                                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                                                        <div style={{flex: 1}}>
+                                                                            <div style={{fontWeight: 600, marginBottom: '0.25rem'}}>
+                                                                                {suggestion.card.Name}
+                                                                            </div>
+                                                                            <div style={{opacity: 0.8, fontSize: '0.7rem'}}>
+                                                                                {suggestion.reason}
+                                                                            </div>
+                                                                        </div>
+                                                                        <button 
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                addCardToBuilder(suggestion.card);
+                                                                            }}
+                                                                            className="btn-primary"
+                                                                            style={{padding: '0.25rem 0.5rem', fontSize: '0.7rem', marginTop: 0, width: 'auto'}}
+                                                                        >
+                                                                            + Add
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    
                                                     {/* Synergy Hints */}
                                                     {hints.length > 0 && (
                                                         <div style={{marginBottom: '1rem'}}>
@@ -1716,7 +2371,7 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                                     </div>
                                                     
                                                     <div style={{fontSize: '0.75rem', marginBottom: '0.5rem', opacity: 0.9}}>
-                                                        Foundations: {stats.foundationCount} • Attacks: {stats.attackCount} • Actions: {stats.actionCount}
+                                                        Foundations: {stats.foundationCount} • Attacks: {stats.attackCount} • Actions: {stats.actionCount} • Assets: {stats.assetCount} • Backups: {stats.backupCount}
                                                     </div>
                                                     
                                                     <details style={{fontSize: '0.75rem', marginTop: '0.5rem'}}>
@@ -1911,6 +2566,44 @@ Be specific with card names, exact numbers, damage calculations to 31 vitality, 
                                                     Actions ({actions.reduce((s, c) => s + c.count, 0)})
                                                 </div>
                                                 {actions.map(entry => (
+                                                    <div key={entry.card.Name} className="deck-card-row card">
+                                                        <div className="deck-card-name">{entry.card.Name}</div>
+                                                        <div className="deck-card-controls">
+                                                            <button onClick={() => removeCardFromBuilder(entry.card)} className="deck-btn-small btn-secondary">-</button>
+                                                            <span className="deck-card-count">{entry.count}x</span>
+                                                            <button onClick={() => addCardToBuilder(entry.card)} className="deck-btn-small btn-primary" disabled={entry.count >= 4}>+</button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        
+                                        {/* Assets */}
+                                        {assets.length > 0 && (
+                                            <div className="deck-section">
+                                                <div className="deck-section-title">
+                                                    Assets ({assets.reduce((s, c) => s + c.count, 0)})
+                                                </div>
+                                                {assets.map(entry => (
+                                                    <div key={entry.card.Name} className="deck-card-row card">
+                                                        <div className="deck-card-name">{entry.card.Name}</div>
+                                                        <div className="deck-card-controls">
+                                                            <button onClick={() => removeCardFromBuilder(entry.card)} className="deck-btn-small btn-secondary">-</button>
+                                                            <span className="deck-card-count">{entry.count}x</span>
+                                                            <button onClick={() => addCardToBuilder(entry.card)} className="deck-btn-small btn-primary" disabled={entry.count >= 4}>+</button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        
+                                        {/* Backups */}
+                                        {backups.length > 0 && (
+                                            <div className="deck-section">
+                                                <div className="deck-section-title">
+                                                    Backups ({backups.reduce((s, c) => s + c.count, 0)})
+                                                </div>
+                                                {backups.map(entry => (
                                                     <div key={entry.card.Name} className="deck-card-row card">
                                                         <div className="deck-card-name">{entry.card.Name}</div>
                                                         <div className="deck-card-controls">
